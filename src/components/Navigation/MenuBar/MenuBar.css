@@ -1,0 +1,18 @@
+.MenuBar {
+    background-color: aqua;
+    height: 50px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.MenuBar nav {
+    height: 100%;
+
+}
