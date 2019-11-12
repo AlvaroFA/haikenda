@@ -1,0 +1,20 @@
+.SideMenu {
+   position: fixed;  
+   width: 280px;
+   max-width: 70% ; 
+   height: 100%;
+   background-color: aqua;
+   padding: 32px 16px;
+   transition: transform 0.3s ease-out;
+}
+
+.Open{
+    transform: translate(0);
+
+
+}
+
+.Closed{
+    transform: translate(-100%);
+
+}

@@ -1,14 +1,18 @@
 import React from 'react';
-import Aux from '../../hoc/Aux';
+import Border from '../hoc/Border';
 import MenuBar from  '../Navigation/MenuBar/MenuBar';
+import SideMenu from '../Navigation/SideMenu/SideMenu';
+import SignUp from '../../containers/SignUp/SignUp';
 
 const layout = (props)=>(
-    <Aux>
-    <MenuBar/>   
+    <Border>
+    <MenuBar/> 
+    <SideMenu/>  
     <main>
-        {props.children}    
+        {props.children}
+        <SignUp/>    
     </main>
-    </Aux>
+    </Border>
 );
 
 export default layout;
