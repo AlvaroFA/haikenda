@@ -7,12 +7,11 @@ import SignUp from '../../containers/SignUp/SignUp';
 const layout = (props)=>(
     <Border>
     <MenuBar/> 
-    <SideMenu/>  
+    <SideMenu/>
     <main>
         {props.children}
-        <SignUp/>    
+            
     </main>
     </Border>
 );
-
 export default layout;

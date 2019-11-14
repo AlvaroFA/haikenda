@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Layout from './components/Layout/Layout';
-
+import SignUp from './containers/SignUp/SignUp';
+import Timetable from './containers/TimeTable/TimeTable';
 
 class App extends Component {
   render() {
@@ -8,6 +9,7 @@ class App extends Component {
       <div>
         <Layout>
           <p>Pantalla inicial</p>
+          <Timetable />
         </Layout>  
       </div>
     );

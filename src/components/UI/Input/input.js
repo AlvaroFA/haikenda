@@ -4,7 +4,8 @@ import React from 'react';
 const input= (props)=>{
     let inputElement = null;
 
-    switch(inputElement){
+    switch(props.inputtype){
+        
         case('textArea'):
             inputElement = <textarea {...props}/>
             break;
@@ -15,10 +16,10 @@ const input= (props)=>{
             inputElement = <input {...props}/>
     }
 return(
-      <div>
+    <div>
     <label>{props.label}</label>
     {inputElement}
-        </div>
+    </div>
 );
 }
    
