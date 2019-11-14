@@ -30,18 +30,24 @@ var keys = {
 
     const { groups, items } = generateFakeData();
     const defaultTimeStart = moment()
-      .startOf("day")
+      .startOf("Month")
       .toDate();
     const defaultTimeEnd = moment()
-      .startOf("day")
-      .add(1, "day")
+      .startOf("Month")
+      .add(1, "Month")
       .toDate();
+    const minZoom= 7*24*60*60*1000;
+    const maxZoom= 2592000000;
+    const canResize=false;
 
     this.state = {
       groups,
       items,
       defaultTimeStart,
-      defaultTimeEnd
+      defaultTimeEnd,
+      canResize,
+      minZoom,
+      maxZoom
     };
   }
 
@@ -51,7 +57,7 @@ var keys = {
   };
 
   render() {
-    const { groups, items, defaultTimeStart, defaultTimeEnd } = this.state;
+    const { groups, items, defaultTimeStart, defaultTimeEnd, canResize, minZoom, maxZoom } = this.state;
 
     return (
         <div className="container">
@@ -70,9 +76,11 @@ var keys = {
         itemHeightRatio={0.75}
         showCursorLine
         canMove={false}
-        canResize={false}
+        canResize={canResize}
         defaultTimeStart={defaultTimeStart}
         defaultTimeEnd={defaultTimeEnd}
+        minZoom= {minZoom}
+        maxZoom= {maxZoom}
       >
 
         
