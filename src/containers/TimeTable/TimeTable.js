@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import moment from "moment";
+import generateFakeData from './fake-data';
+import './Timetable.css';
+import "react-calendar-timeline/lib/Timeline.css";
 
 import Timeline, {
   TimelineHeaders,
@@ -25,7 +28,7 @@ var keys = {
   constructor(props) {
     super(props);
 
-    const { groups, items } ={"2","2"};
+    const { groups, items } = generateFakeData();
     const defaultTimeStart = moment()
       .startOf("day")
       .toDate();
@@ -51,6 +54,7 @@ var keys = {
     const { groups, items, defaultTimeStart, defaultTimeEnd } = this.state;
 
     return (
+        <div className="container">
       <Timeline
         groups={groups}
         groupRenderer={this.groupRenderer}
@@ -70,6 +74,8 @@ var keys = {
         defaultTimeStart={defaultTimeStart}
         defaultTimeEnd={defaultTimeEnd}
       >
+
+        
         <TimelineHeaders className="sticky">
           <SidebarHeader>
             {({ getRootProps }) => {
@@ -80,6 +86,7 @@ var keys = {
           <DateHeader />
         </TimelineHeaders>
       </Timeline>
+      </div>
     );
 
   }

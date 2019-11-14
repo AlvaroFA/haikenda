@@ -1,5 +1,21 @@
-.react-calendar-timeline .rct-item.item-weekend {
-        background: #21F32C;
-        border-color: #29B31A;
-      }
-  
+.rct-sidebar-row .highlight,
+.react-calendar-timeline .rct-horizontal-lines .highlight {
+  background-color: #bada55;
+}
+
+/* get rid of the left padding so that the 
+ * custom rendered group takes up the entire width 
+ * of the sidebar
+ */
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row {
+  padding-left: 0;
+}
+
+
+.container{
+    width: 100%;
+    top: 0;
+    left: 0;
+    margin-left: 13%;
+    position: sticky;
+}

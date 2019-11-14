@@ -3,6 +3,7 @@ import Border from '../hoc/Border';
 import MenuBar from  '../Navigation/MenuBar/MenuBar';
 import SideMenu from '../Navigation/SideMenu/SideMenu';
 import SignUp from '../../containers/SignUp/SignUp';
+import Timetable from '../../containers/TimeTable/TimeTable';
 
 const layout = (props)=>(
     <Border>
@@ -12,6 +13,7 @@ const layout = (props)=>(
         {props.children}
             
     </main>
+    <Timetable />  
     </Border>
 );
 export default layout;
