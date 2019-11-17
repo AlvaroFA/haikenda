@@ -8,3 +8,10 @@ En funcion del tipo de boton clasificado aqui la aplicacion reconocera el tipo d
 .Cancel
 
 */
+
+
+.IncorrectValues {
+    border: 1px solid red;
+    background-color:  orange;
+    
+}

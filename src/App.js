@@ -8,7 +8,8 @@ class App extends Component {
     return (
       <div>
         <Layout>
-          <TimeTableFullCalendar/> 
+    {/*<TimeTableFullCalendar/>*/}
+    <SignUp/> 
         </Layout>
        
       </div>

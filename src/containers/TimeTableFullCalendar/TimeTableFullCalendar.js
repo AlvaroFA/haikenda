@@ -18,24 +18,35 @@ const TimeTableFullCalendar = () => {
     
       defaultView="resourceTimeline"
       
-      plugins={[  resourceTimelinePlugin ]} 
+      plugins={[  resourceTimelinePlugin  ]} 
       header={{
-        left: 'prev,next today',
+        left: 'prev,next ,today',
         center: 'title',
         // TO DO MODIFY BUTTON CALENDAR
-				right: 'resourceTimelineMonth,resourceTimelineWeek'
+				right: 'resourceTimelineMonth, resourceTimelineDay, resourceTimeline'
       }}
       locale= 'es'
       firstDay= {1}
+      nowIndicator= {true}
       schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
-      resources={ [
+      resources={[
         {
           id: 'a',
           title: 'Room A'
-        },
+        }
+      ]}
+      events={[
         {
-          id: 'b',
-          title: 'Room B'
+          id: '1',
+          resourceId: 'a',
+          title: 'Meeting',
+          allDay:true,
+          daysOfWeek:[1,2,3,4,5],
+          startRecur:'2019-11-15',
+          endRecur:'2019-12-31',
+          duration:'7 days' 
+
+
         }
       ]
     }
