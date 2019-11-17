@@ -9,7 +9,7 @@ class App extends Component {
       <div>
         <Layout>
     {/*<TimeTableFullCalendar/>*/}
-    <SignUp/> 
+        <SignUp/> 
         </Layout>
        
       </div>

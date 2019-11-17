@@ -3,10 +3,7 @@ import Logo from '../../Logo/Logo';
 import NavigationItems from '../../Navigation/NavigationItems/NavigationItems'
 import './SideMenu.css';
 
-const sideMenu = (props) =>{
-
-
-return(
+const sideMenu = (props) =>(
     <div className="SideMenu">
         <Logo/>
         <nav>
@@ -15,7 +12,7 @@ return(
     </div>
 
 );
-};
+
 
 
 export default sideMenu;

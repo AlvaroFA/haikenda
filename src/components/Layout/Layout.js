@@ -12,6 +12,7 @@ const layout = (props)=>(
         <MenuBar/> 
         <SideMenu/>
         */
+       <SideMenu/>
         }
         <main>
             {props.children}

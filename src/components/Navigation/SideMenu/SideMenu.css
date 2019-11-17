@@ -3,18 +3,30 @@
    width: 280px;
    max-width: 70% ; 
    height: 100%;
+   left: 0;
+   top:0;
    background-color: aqua;
+   z-index: 200;
    padding: 32px 16px;
+   box-sizing: border-box;
    transition: transform 0.3s ease-out;
 }
 
+@media (min-width:500px){
+    .SideMenu {
+        display: none;
+    }
+}
+
+
+
 .Open{
-    transform: translate(0);
+    transform: translateX(0);
 
 
 }
 
 .Closed{
-    transform: translate(-100%);
+    transform: translateX(-100%);
 
 }
