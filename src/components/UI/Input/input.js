@@ -1,5 +1,5 @@
 import React from 'react';
-import './Input.css'
+import './Input.css';
 // Pendiente de importar las clases del css 
 
 const input= (props)=>{
@@ -18,6 +18,9 @@ const input= (props)=>{
         case ('input'):
                 inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
             break;
+        case('date'):
+                inputElement = <date {... props.inputConfig} value={props.value} onChange={props.changed}/>;
+            break;           
         default:
             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
     }
