@@ -111,9 +111,9 @@ function TimeTableForm() {
         setCreationCheck(true);
         const timeTableData = {};
         for( let timeTableElement in timeTableForm){
-            timeTableData[ timeTableElement] = timeTableForm[ timeTableElement].value;
+            timeTableData[timeTableElement] = timeTableForm[timeTableElement].value;
         }
-        axios.post('/timetable.json', timeTableForm).then(response => console.log(response))
+        axios.post('/timetable.json', timeTableData).then(response => console.log(response))
         .catch(error=> console.log(error));    
     };
 
