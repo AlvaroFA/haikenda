@@ -6,8 +6,6 @@ import MenuButton from '../SideMenu/MenuButton'
 
 const menubar = (props)=>(
     <header className="MenuBar">
-        <MenuButton clicked={props.buttonMenuClicked}/>
-        <Logo/>
         <nav>Menu principal</nav>
         <NavigationItems/>
     </header>

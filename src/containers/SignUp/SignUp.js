@@ -5,6 +5,7 @@ import Input from '../../components/UI/Input/Input';
 import  Border from '../../components/hoc/Border';
 import axios from '../../axios.app';
 class SignUp extends Component {
+    
     state={
         workerForm:{
             name:{
@@ -14,6 +15,7 @@ class SignUp extends Component {
                     placeholder: 'Nombre del trabajador'
                 },
                 value:'',
+                label:'Nombre',
                 validation:{
                     required: true           
                 },
@@ -26,6 +28,7 @@ class SignUp extends Component {
                     placeholder: 'Apellidos del trabajador'
                 },
                 value:'',
+                label:'Apellidos',
                 validation:{
                     required: true
                     
@@ -40,6 +43,7 @@ class SignUp extends Component {
                     placeholder: 'Correo del trabajador'
                 },
                 value:'',
+                label:'Email',
                 validation:{
                     required: true,
                     checkEmail:true
@@ -53,6 +57,7 @@ class SignUp extends Component {
                     placeholder: 'Puesto del trabajador'
                 },
                 value:'',
+                label:'Puesto',
                 validation:{
                     required: true
                 },

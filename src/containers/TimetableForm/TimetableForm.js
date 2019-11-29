@@ -1,106 +1,143 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import Input from '../../components/UI/Input/Input';
-import axios from '../../axios.app';
+import Button from '../../components/UI/Button/Button';
 import Border from '../../components/hoc/Border';
 
+const initialTimeTableForm = {
+    oneTime:{
+        elementType: 'input',
+        inputConfig: {
+            type: 'checkbox',
+            name: 'once',
+        },
+        value: '',
+        label:'Repetir una vez',
+        validation: {
+            required: true,
+        },
+        isValid: false,
+        
+    },
+    weekly:{
+        elementType: 'input',
+        inputConfig: {
+            type: 'checkbox',
+            name: 'weekly',
+        },
+        value: '',
+        label:'Semanalmente',
+        validation: {
+            required: true,
+        },
+        isValid: false,
+        
+    },
+    title: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'text',
+            placeholder: 'Nombre del horario'
+        },
+        value: '',
+        label:'Titulo del horario',
+        validation: {
+            required: true,
+        },
+        isValid: false
+    },
+    startTime: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'date',
+            placeholder: 'dd/mm/YYYY'
+        },
+        value: '',
+        label:'Fecha de inicio',
+        validation: {
+            required: true
+        },
+        isValid: false
+    },
+    endTime: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'date',
+            placeholder: 'dd/mm/YYYY'
+        },
+        value: '',
+        label:'Fecha de fin',
+        validation: {
+            required: true
+        },
+        isValid: false
+    },
 
-class TimeTableForm extends Component {
-    state = {
-        timeTableForm: {
-            title: {
-                elementType: 'input',
-                inputConfig: {
-                    type: 'text',
-                    placeholder: 'Nombre del horario'
-                },
-                value: '',
-                validation: {
-                    required: true,
-                },
-                isValid: false
-            },
-            startTime:{
-                elementType:'date',
-                inputConfig:{
-                    type: 'date',
-                    placeholder: 'dd/mm/YYYY'
-                },
-                value:'',
-                validation:{
-                    required:true
-                },
-                isValid:false
-            },
-            endTime: {
-                elementType:'date',
-                inputConfig:{
-                    type: 'date',
-                    placeholder: 'dd/mm/YYYY'
-                },
-                value:'',
-                validation:{
-                    required:true
-                },
-                isValid:false
-            },
-            type: {
 
-            },
-        creationCheck: false
+}
+function TimeTableForm() {
+
+    const [timeTableForm, setTimeTableform] = useState(initialTimeTableForm);
+    const [creationCheck, setCreationCheck] = useState(false);
+
+    const createTimetableHandler = () => {
+
+    };
+
+    const inputChangeHandler = (evt, element) => {
+
+    };
+
+    const createTimeTableFormProceed = () => {
+        event.preventDefault();
+
+        // this.setState({signUpCorrect: true});
+        setCreationCheck(true);
+
+        const formWorkerData = {};
+        for (let formWorkElement in workerForm) {
+            formWorkerData[formWorkElement] = workerForm[formWorkElement].value;
         }
-
-    }
-
-    createTimetableHandler=()=>{
-        event.preventDefault;
-        this.setState({creationCheck:true});
-        const timetableData = {};
-        for( let timeTableElement in this.state.timeTableForm){
-            timetableData[ timetableData]= this.state.timeTableForm[timeTableElement].value;
+        const signUp = {
+            worker: formWorkerData
         }
-        const TimeTable={
-            timetable: timetableData
-        }
-        axios.post('/timeTable.json')
-        .then(response => console.log(response))
-        .catch(error => console.log(error));
+        axios.post('/timetable.json', signUp).then(response => console.log(response))
+            .catch(error => console.log(error));
     };
 
 
-    render() {
-        const formElementsArray=[];
-        for( let k in this.state.timeTableForm){
-            formElementsArray.push({
-                id: k,
-                config: this.state.timeTableForm[k]
-            });
-        }
-        let form =(
-            <form onSubmit={this.signUpProceed} id='form'>
+    const formElementsArray = [];
+    for (let k in timeTableForm) {
+        formElementsArray.push({
+            id: k,
+            config: timeTableForm[k]
+        });
+    }
+    let form = (
+        <form onSubmit={createTimeTableFormProceed} id='form'>
             {formElementsArray.map(formElement => (
-                
-                <Input 
-                key={formElement.id} 
-                elementType={formElement.config.elementType}
-                inputConfig={formElement.config.inputConfig}
-                value={formElement.config.value}
-                incorrectValues={!formElement.config.isValid}
-                changed={(evt)=>this.inputChangeHandler(evt,formElement.id)}               
+
+                <Input
+                    key={formElement.id}
+                    elementType={formElement.config.elementType}
+                    inputConfig={formElement.config.inputConfig}
+                    value={formElement.config.value}
+                    incorrectValues={!formElement.config.isValid}
+                    changed={(evt) => inputChangeHandler(evt, formElement.id)}
+                    label={formElement.config.label}
                 />
             ))}
-            <Button btntype="Save" clicked={this.createTimetableHandler}>Crear horario</Button>
-            <Button btnType="Cancel" clicked={this.signUpCancelled}>Cancelar</Button>
-            <Button btnType="Clear" clicked={this.clearForm}>Limpiar</Button>
-            </form>
-        )
-        return (
-            <Border>
+            <Button btntype="Save" clicked={createTimetableHandler}>Crear horario</Button>
+
+        </form>
+    )
+    return (
+        <Border>
             <div>
                 <h4>Gestión de Horario</h4>
                 {form}
             </div>
-            </Border>
-        )
-    }
-}           
+        </Border>
+    )
+
+}
 export default TimeTableForm;

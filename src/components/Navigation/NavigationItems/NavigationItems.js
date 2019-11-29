@@ -6,9 +6,9 @@ import './NavigationItems.css';
 
 const navigationItems = ()=>(
     <ul className={classes.NavigationItems}>
-        <NavigationItem link="home" active>Inicio</NavigationItem>
-        <NavigationItem link="/users" active>Usuarios</NavigationItem>
-        <NavigationItem link="/timetable" active>Horarios</NavigationItem>        
+        <NavigationItem link="/" active>Inicio</NavigationItem>
+        <NavigationItem link="/signup" active>Usuarios</NavigationItem>
+        <NavigationItem link="/timetableform" active>Crear Horario</NavigationItem>           
     </ul>
 );
 

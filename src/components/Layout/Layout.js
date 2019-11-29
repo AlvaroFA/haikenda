@@ -4,16 +4,15 @@ import MenuBar from  '../Navigation/MenuBar/MenuBar';
 import SideMenu from '../Navigation/SideMenu/SideMenu';
 import SignUp from '../../containers/SignUp/SignUp';
 
+
 //import Timetable from '../../containers/TimeTable';
 
 const layout = (props)=>(
     <Border>
-        {/*
-        <MenuBar/> 
-        <SideMenu/>
-        */
        <SideMenu/>
-        }
+        <MenuBar/>
+       
+
         <main>
             {props.children}
         </main>
