@@ -109,7 +109,7 @@ class SignUp extends Component {
 
     inputChangeHandler =(evt , inputId) =>{
         // cloning the data 
-        const updatedWorkerForm ={
+        const updatedWorkerForm = {
             ...this.state.workerForm
         };
         //accessing to elements

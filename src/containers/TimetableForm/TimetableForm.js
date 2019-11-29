@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Input from '../../components/UI/Input/Input';
 import Button from '../../components/UI/Button/Button';
 import Border from '../../components/hoc/Border';
+import axios from '../../axios.app';
 
 const initialTimeTableForm = {
     oneTime:{
@@ -83,25 +84,37 @@ function TimeTableForm() {
 
     };
 
-    const inputChangeHandler = (evt, element) => {
+    const checkValidation= (value , rules) =>{
+           
+    
+    }
+
+    const inputChangeHandler = (evt, inputId) => {        // cloning the data 
+        const newTimeTableForm = {
+            ...timeTableForm
+        };
+        //accessing to elements
+        const updatedElement = { ...newTimeTableForm[inputId] };
+        updatedElement.value = event.target.value;
+        //checking validations
+        updatedElement.valid = checkValidation(updatedElement.value, updatedElement.validation);
+        console.log(updatedElement);
+        // settings new values
+        newTimeTableForm[inputId] = updatedElement;
+        //overwritting the state
+        setTimeTableform(newTimeTableForm);
 
     };
 
     const createTimeTableFormProceed = () => {
         event.preventDefault();
-
-        // this.setState({signUpCorrect: true});
         setCreationCheck(true);
-
-        const formWorkerData = {};
-        for (let formWorkElement in workerForm) {
-            formWorkerData[formWorkElement] = workerForm[formWorkElement].value;
+        const timeTableData = {};
+        for( let timeTableElement in timeTableForm){
+            timeTableData[ timeTableElement] = timeTableForm[ timeTableElement].value;
         }
-        const signUp = {
-            worker: formWorkerData
-        }
-        axios.post('/timetable.json', signUp).then(response => console.log(response))
-            .catch(error => console.log(error));
+        axios.post('/timetable.json', timeTableForm).then(response => console.log(response))
+        .catch(error=> console.log(error));    
     };
 
 
@@ -126,7 +139,7 @@ function TimeTableForm() {
                     label={formElement.config.label}
                 />
             ))}
-            <Button btntype="Save" clicked={createTimetableHandler}>Crear horario</Button>
+            <Button btntype="Save" clicked={createTimeTableFormProceed}>Crear horario</Button>
 
         </form>
     )
