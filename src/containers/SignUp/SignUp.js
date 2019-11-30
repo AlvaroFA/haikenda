@@ -1,18 +1,23 @@
-import React, { Component, useState } from 'react';
-import Button from '../../components/UI/Button/Button';
+import React, { useState } from 'react';
 import './SignUp.css';
 import Input from '../../components/UI/Input/Input';
 import Border from '../../components/hoc/Border';
 import axios from '../../axios.app';
 
-/* checks that it (in order as it is declared in the regexp):
-- contains at least 1 lowercase alphabetical character
-- contains at least 1 uppercase alphabetical character
-- contains at least 1 numeric character
-- contains at least one special character, but we are escaping reserved RegEx characters to avoid conflict
-- has at least 8 characters
-*/
-const strongRegExp = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+/**
+ * Checks that a string is a strong password:
+ * length >=8, with at least 1 lower and upper case letters, 1 number and 1 symbol 
+ * @type {RegExp} */
+const strongPasswordRegExp = (() => {
+    const min1LowerCase = "(?=.*[a-z])"
+    const min1UpperCase = "(?=.*[A-Z])"
+    const min1Number = "(?=.*[0-9])"
+    const min1Symbol = "(?=.*[^a-zA-Z0-9])"
+    const minLength8 = "(?=.{8,})"
+    return new RegExp("^" + min1LowerCase + min1UpperCase + min1Number + min1Symbol + minLength8);
+})();
+
+const emailFormat = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
 
 const initialWorkerForm = {
     name: {
@@ -22,11 +27,14 @@ const initialWorkerForm = {
             placeholder: 'Nombre del trabajador'
         },
         value: '',
+        
         label:'Nombre',
         validation: {
             required: true
         },
-        isValid: false
+        edited: false,
+        isValid: false,
+        validationErrors: ["Campo obligatorio"]
     },
     surname: {
         elementType: 'input',
@@ -40,8 +48,9 @@ const initialWorkerForm = {
             required: true
 
         },
-        isValid: false
-
+        edited: false,
+        isValid: false,
+        validationErrors: ["Campo obligatorio"]
     },
     email: {
         elementType: 'input',
@@ -55,7 +64,9 @@ const initialWorkerForm = {
             required: true,
             checkEmail: true
         },
-        isValid: false
+        edited: false,
+        isValid: false,
+        validationErrors: ["Campo obligatorio"]
     },
     job: {
         elementType: 'input',
@@ -68,7 +79,9 @@ const initialWorkerForm = {
         validation: {
             required: true
         },
-        isValid: false
+        edited: false,
+        isValid: false,
+        validationErrors: ["Campo obligatorio"]
     },
     password: {
         elementType: 'input',
@@ -82,62 +95,119 @@ const initialWorkerForm = {
             required: true,
             checkPassword: true
         },
-        isValid: false
+        edited: false,
+        isValid: false,
+        validationErrors: ["Campo obligatorio"]
     }
 }
 
+const initialOperationResult = {};
+
 function SignUp() {
     const [workerForm, setWorkerForm] = useState(initialWorkerForm);
-    const [signUpCorrect, setSignUpCorrect] = useState(false);
+    const [operationResult, setOperationResult] = useState(initialOperationResult);
 
-    /*checks if all validation are correct returning true if correct or
-    otherwise false if something its wrong*/
+    /**
+     * Checks if all validation are correct
+     * @returns {undefined} if it's correct
+     * @returns {String[]} array with error messages if something is wrong
+     */ 
     const checkValidation = (value, rules) => {
-        let itsOk;
-
-        if (rules.required) {
-            itsOk = value.trim() !== '' ? true : false;
+        let validationErrors = [];
+        if(rules.required){
+            const isEmpty = value.trim() === '';
+            if (isEmpty){
+                validationErrors.push("Campo obligatorio");
+                return validationErrors;
+            } 
         }
 
-        if (rules.checkEmail) {
-            itsOk = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) ? true : false;
+        if(rules.checkEmail){
+            const hasEmailFormat = value.match(emailFormat);
+            if(!hasEmailFormat)    validationErrors.push("Formato de email incorrecto");
         }
 
-        if(itsOk && rules.checkPassword) {
-            itsOk = value.match(strongRegExp)
+        if(rules.checkPassword) {
+            const hasPasswordRequirements = value.match(strongPasswordRegExp)
+            if (!hasPasswordRequirements) validationErrors.push("Mínimo 8 caracteres, con  al menos 1 minúscula, mayúscula, número y símbolo");
         }
-        return itsOk;
+        return validationErrors;
+    }
+
+    const isValid = () => {
+        for(const field in workerForm) {
+            if(workerForm[field].validationErrors.length>0) return false;
+        }
+        return true;
+    }
+
+    const clearForm = () => {
+        setOperationResult(initialOperationResult);
+        setWorkerForm(initialWorkerForm);
+    }
+
+    const submitFailed = () => {
+        return operationResult.failed && operationResult.operation==='submit'
+    }
+
+    const failSubmitOperation = (error)=>{
+        let reason = error.message;
+        if(error.response && error.response.data && error.response.data.error) reason = error.response.data.error;
+        setOperationResult({
+            failed: true,
+            operation: 'submit',
+            reason
+        });
+    }
+
+    const isWaitingForOperation = ()=> {
+        return operationResult.waiting;
+    }
+
+    const startSubmitOperation = ()=> {
+        setOperationResult({
+            waiting: true,
+            operation: 'submit'
+        });
+    }
+
+    const successSubmitOperation = () => {
+        setOperationResult({
+            success: true,
+            operation: 'submit'
+        });
+    }
+
+    const getValuesFromForm = ()=> {
+        const formWorkerData = {};
+        for (let formWorkElement in workerForm) {
+            formWorkerData[formWorkElement] = workerForm[formWorkElement].value;
+        }
     }
 
     // submit form method
     const signUpProceed = () => {
         event.preventDefault();
 
-        // this.setState({signUpCorrect: true});
-        setSignUpCorrect(true)
-
-        const formWorkerData = {};
-        for (let formWorkElement in workerForm) {
-            formWorkerData[formWorkElement] = workerForm[formWorkElement].value;
+        //only submit if it's valid
+        if(!isValid()) {
+            failSubmitOperation("Algún dato no es válido");
+            return;
         }
-        const signUp = {
-            worker: formWorkerData
-        }
-        axios.post('/workers.json', signUp).then(response => console.log(response))
-            .catch(error => console.log(error));
+
+        startSubmitOperation();
+
+        axios.post('/workers.json', {
+            worker: getValuesFromForm()
+        })
+        .then(result => {
+            successSubmitOperation();
+            clearForm();
+        })
+        .catch(error => {
+            failSubmitOperation(error);
+        });
     };
-
-    const signUpCancelled = () => {
-        // this.setState({signUpCorrect: false});
-        setSignUpCorrect(false)
-
-        console.log('Cancelando el alta');
-    };
-
-    const clearForm = () => {
-        document.getElementById("form").reset();
-    }
-
 
     const inputChangeHandler = (evt, inputId) => {
         // cloning the data 
@@ -147,17 +217,16 @@ function SignUp() {
         //accessing to elements
         const updatedElement = { ...updatedWorkerForm[inputId] };
         updatedElement.value = event.target.value;
+        updatedElement.edited = true;
         //checking validations
-        updatedElement.valid = checkValidation(updatedElement.value, updatedElement.validation);
-        console.log(updatedElement);
+        updatedElement.validationErrors= checkValidation(updatedElement.value, updatedElement.validation);
+        updatedElement.isValid = !!updatedElement.validationErrors
         // settings new values
         updatedWorkerForm[inputId] = updatedElement;
         //overwritting the state
         // this.setState({workerForm: updatedWorkerForm});
         setWorkerForm(updatedWorkerForm)
     }
-
-
 
     /** antiguo render */
     const formElementsArray = [];
@@ -167,23 +236,32 @@ function SignUp() {
             config: workerForm[k]
         });
     }
-    let form = (
-        <form onSubmit={signUpProceed} id='form'>
-            {formElementsArray.map(formElement => (
+    let state;
+    if(operationResult.operation==='submit') {
+        if(operationResult.waiting) state = <p className="state waiting">Guardando...</p>
+        else if (operationResult.success) state = <p className="state success">Usuario guardado</p>
+        else if (operationResult.failed) state = <p className="state failed">{"No se pudo guardar el usuario: "+operationResult.reason}</p>
+    }
 
-                <Input
-                    key={formElement.id}
-                    elementType={formElement.config.elementType}
-                    inputConfig={formElement.config.inputConfig}
-                    value={formElement.config.value}
-                    incorrectValues={!formElement.config.isValid}
-                    changed={(evt) => inputChangeHandler(evt, formElement.id)}
-                    label={formElement.config.label}
-                />
-            ))}
-            <Button btntype="Save" clicked={signUpProceed}>Alta de usuario</Button>
-            <Button btnType="Cancel" clicked={signUpCancelled}>Cancelar Alta</Button>
-            <Button btnType="Clear" clicked={clearForm}>Limpiar</Button>
+    const form = (
+        <form>
+            <fieldset disabled={isWaitingForOperation()}>
+                {formElementsArray.map(formElement => (
+
+                    <Input
+                        key={formElement.id}
+                        elementType={formElement.config.elementType}
+                        inputConfig={formElement.config.inputConfig}
+                        value={formElement.config.value}
+                        incorrectValues={submitFailed() || formElement.config.edited ? formElement.config.validationErrors : undefined}
+                        changed={(evt) => inputChangeHandler(evt, formElement.id)}
+                        label={formElement.config.label}
+                    />
+                ))}
+                <button className="Save" onClick={signUpProceed} >Alta de usuario</button>
+                <button className="Clear" onClick={clearForm}>Limpiar</button>            
+                {state}    
+            </fieldset>
         </form>
     );
     return (
