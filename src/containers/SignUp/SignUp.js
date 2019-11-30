@@ -5,6 +5,15 @@ import Input from '../../components/UI/Input/Input';
 import Border from '../../components/hoc/Border';
 import axios from '../../axios.app';
 
+/* checks that it (in order as it is declared in the regexp):
+- contains at least 1 lowercase alphabetical character
+- contains at least 1 uppercase alphabetical character
+- contains at least 1 numeric character
+- contains at least one special character, but we are escaping reserved RegEx characters to avoid conflict
+- has at least 8 characters
+*/
+const strongRegExp = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+
 const initialWorkerForm = {
     name: {
         elementType: 'input',
@@ -61,6 +70,20 @@ const initialWorkerForm = {
         },
         isValid: false
     },
+    password: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'password',
+            placeholder: 'min 8 caracteres, con numeros y símbolos'
+        },
+        value:'',
+        label:'Contraseña',
+        validation:{
+            required: true,
+            checkPassword: true
+        },
+        isValid: false
+    }
 }
 
 function SignUp() {
@@ -78,6 +101,10 @@ function SignUp() {
 
         if (rules.checkEmail) {
             itsOk = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) ? true : false;
+        }
+
+        if(itsOk && rules.checkPassword) {
+            itsOk = value.match(strongRegExp)
         }
         return itsOk;
     }
