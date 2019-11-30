@@ -2,23 +2,17 @@ import React from 'react';
 import './Input.css';
 // Pendiente de importar las clases del css 
 
-const input= (props)=>{
+const Input = (props)=>{
     let inputElement = null;
     
-
-    if(props.incorrect){
-        
-    }
-
     switch(props.elementType){
         
         case('textArea'):
             inputElement = <textarea {...props.inputConfig} value={props.value}  onChange={props.changed}/>;
             break;
         case ('input'):
-                inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
-            break;
-                       
+             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
+            break;                
         default:
             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
     }
@@ -31,4 +25,4 @@ return(
 };
    
 
-export default input;
+export default Input;
