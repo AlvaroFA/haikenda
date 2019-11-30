@@ -1,12 +1,12 @@
 import React from 'react';
 import './Input.css';
 // Pendiente de importar las clases del css 
-
+// Custom component for input used 
 const Input = (props)=>{
     let inputElement = null;
     
     switch(props.elementType){
-        
+  
         case('textArea'):
             inputElement = <textarea {...props.inputConfig} value={props.value}  onChange={props.changed}/>;
             break;

@@ -5,6 +5,8 @@ import Border from '../../components/hoc/Border';
 import axios from '../../axios.app';
 import TimeTableContainer from '../../components/TimeTableContainer/TimeTableContainer';
 
+
+// initial state of form
 const initialTimeTableForm = {
     timeTableForm: {
         oneTime: {
@@ -76,15 +78,21 @@ const initialTimeTableForm = {
     }
 
 }
+// initial values for useState
 const data = {};
+const updateData={};
+
+
 function TimeTableForm() {
 
+    //useState variables
     const [timeTableFormState, setTimeTableform] = useState(initialTimeTableForm);
     const [creationCheck, setCreationCheck] = useState(false);
-    const [dataState, setData] = useState(data)
+    const [dataState, setData] = useState(data);
+    const [updatedState, setUpdated]= useState(updateData);
     const isMounted = useRef(true);
 
-
+    //validation method
     const checkValidation = (value, rules) => {
         let itsOk;
         if (rules.required) {
@@ -92,6 +100,7 @@ function TimeTableForm() {
         }
     }
 
+    //Variable to fecthing values from DDBB
     const loadDBDataInState = ()=>{
         axios.get('https://haikenda-6a939.firebaseio.com/timetable.json').then(response => {
             if (isMounted.current == true) {
@@ -100,6 +109,7 @@ function TimeTableForm() {
         })
     }
 
+    //Using isMounted to avoid race condition 
     useEffect(() => {
         loadDBDataInState();
         return (() => {
@@ -107,6 +117,8 @@ function TimeTableForm() {
         });
     }, []);
 
+    
+    /*verify when detect changes on input*/
     const inputChangeHandler = (event, inputId) => { 
         event.preventDefault();       // cloning the data 
         const newTimeTableForm = {
@@ -124,11 +136,15 @@ function TimeTableForm() {
 
     };
 
-
+    // Clear form
     const clearFormHandler = (event) => {
         event.preventDefault();
         setTimeTableform(initialTimeTableForm);
     }
+
+    /*Creation form
+    Iterates inpus values and save into a variable timeTableData. This variable is passed to axios post 
+    to store data into DDBB */
 
     const createTimeTableFormProceed = (event) => {
         event.preventDefault();
@@ -137,25 +153,52 @@ function TimeTableForm() {
         for (let timeTableElement in timeTableFormState.timeTableForm) {
             timeTableData[timeTableElement] = timeTableFormState.timeTableForm[timeTableElement].value;
         }
+        //saving data
         axios.post('/timetable.json', timeTableData)
             .then(response =>{
+                //reloading data
                 loadDBDataInState();
             })
             .catch(error => console.log(error));
     };
 
+    /*EraseMethod
+    @param idTimetable determine which timeline would be deleted
+    */
     const erasehandler=(event,idTimetable)=>{
         console.log(idTimetable);
         event.preventDefault();
         console.log('borrar');
+        // execiting delete method
         axios.delete('https://haikenda-6a939.firebaseio.com/timetable/'+idTimetable+'.json').then(
             response =>{
+                // reloading new data
               loadDBDataInState();
-                console.log(response)
          }
         );
     };
 
+    const updateHandler =(event, timetableId)=>{
+        event.preventDefault();
+        axios.get('https://haikenda-6a939.firebaseio.com/timetable/'+timetableId+'.json').then(response => {
+            if (isMounted.current == true) {
+                console.log(response.data);
+                let datos=(response.data);
+                /*const formElementsArray = [];
+                for (let k in datos) {
+                    let item= datos[k]
+                    formElementsArray.push({
+                        id: k,
+                        config: item
+                    });
+                    
+                }*/
+                setUpdated(response.data);
+            }
+        })
+    }
+
+    /*Array to populate forms elements*/
     const formElementsArray = [];
     for (let k in timeTableFormState.timeTableForm) {
         formElementsArray.push({
@@ -163,18 +206,33 @@ function TimeTableForm() {
             config: timeTableFormState.timeTableForm[k]
         });
     }
+    /*Array to populate timetable elements*/
     const timeTableElementsArray = [];
     for (let k in dataState) {
         timeTableElementsArray.push({
             id:  k,
             datos:dataState[k]
         });
+
+
     }
 
+/*Creation form method */ 
+const createForm =()=>{
+    const formElementsArray = [];
+    console.log(timeTableFormState.timeTableForm)
+    for (let k in timeTableFormState.timeTableForm) {
+        let item = timeTableFormState.timeTableForm[k]
+        formElementsArray.push({
+            id: k,
+            config: item
+        });
+    }
 let form = (
     <form id='form'>
-        {formElementsArray.map(formElement => (
-
+        
+        {formElementsArray.map(formElement => ( 
+            //Populating input component, create once for each form element
             <Input
                 key={formElement.id}
                 elementType={formElement.config.elementType}
@@ -185,31 +243,41 @@ let form = (
                 label={formElement.config.label}
             />
         ))}
-        <Button btntype="tes" clicked={createTimeTableFormProceed}>Crear horario</Button>
-        <Button btntype="Save" clicked={clearFormHandler}>Borrar</Button>
+        <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
+        <Button btntype="Delete" clicked={clearFormHandler}>Borrar</Button>
     </form>
+    );
+    return form;
+};
+    
 
 
-);
+/*Creation Table method */
+const createTable= ()=>{
+    let table = (
+        <div>
+        {timeTableElementsArray.map(elemento=>(
+            // Creation  TimeTable element and populating
+            <TimeTableContainer key={elemento.id} title={elemento.datos.title} startTime={elemento.datos.startTime} 
+                endTime={elemento.datos.endTime} onClick={
+                    (event)=>erasehandler(event,elemento.id)}
+                    toupdate={(event)=>updateHandler(event,elemento.id)}
+                />
+        ))}
+        </div>
+    );
 
-let table = (
-    <div>
-    {timeTableElementsArray.map(elemento=>(
-        <TimeTableContainer key={elemento.id} title={elemento.datos.title} startTime={elemento.datos.startTime} 
-            endTime={elemento.datos.endTime} onClick={
-                (event)=>erasehandler(event,elemento.id)}
-            />
-    ))}
-    </div>
-);
+    return table;
+};
 
 
 return (
+    //Added HOC (High order Component) and adding method to display data 
     <Border>
         <div>
             <h4>Gestión de Horario</h4>
-            {form}
-            {table}
+            {createForm()}
+            {createTable()}        
         </div>
     </Border>
 )
