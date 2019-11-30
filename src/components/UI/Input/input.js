@@ -16,9 +16,11 @@ const Input = (props)=>{
         default:
             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
     }
+
+    const label = props.inputConfig && props.inputConfig.hidden ? '' : <label>{props.label}</label> 
 return(
     <div>
-    <label>{props.label}</label>
+    {label}
     {inputElement}
     </div>
 );

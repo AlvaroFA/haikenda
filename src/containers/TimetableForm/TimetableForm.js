@@ -9,6 +9,17 @@ import TimeTableContainer from '../../components/TimeTableContainer/TimeTableCon
 // initial state of form
 const initialTimeTableForm = {
     timeTableForm: {
+        id: {
+            elementType: 'input',
+            inputConfig: {
+                type: 'text',
+                name: 'id',
+                disabled: true,
+                hidden: true,
+            },
+            value: '',
+            label: 'ID',
+        },
         oneTime: {
             elementType: 'input',
             inputConfig: {
@@ -80,20 +91,18 @@ const initialTimeTableForm = {
 }
 // initial values for useState
 const data = {};
-const updateData={};
-
 
 function TimeTableForm() {
 
     //useState variables
-    const [timeTableFormState, setTimeTableform] = useState(initialTimeTableForm);
-    const [creationCheck, setCreationCheck] = useState(false);
+    const [timeTableFormState, setTimeTableFormState] = useState(initialTimeTableForm);
     const [dataState, setData] = useState(data);
-    const [updatedState, setUpdated]= useState(updateData);
     const isMounted = useRef(true);
 
     //validation method
     const checkValidation = (value, rules) => {
+        if(!rules) return true;
+
         let itsOk;
         if (rules.required) {
             itsOk = value.trim() !== '' ? true : false;
@@ -132,14 +141,14 @@ function TimeTableForm() {
         // settings new values
         newTimeTableForm[inputId] = updatedElement;
         //overwritting the state
-        setTimeTableform({ ...timeTableFormState, timeTableForm: newTimeTableForm });
+        setTimeTableFormState({ ...timeTableFormState, timeTableForm: newTimeTableForm });
 
     };
 
     // Clear form
     const clearFormHandler = (event) => {
         event.preventDefault();
-        setTimeTableform(initialTimeTableForm);
+        setTimeTableFormState(initialTimeTableForm);
     }
 
     /*Creation form
@@ -148,15 +157,17 @@ function TimeTableForm() {
 
     const createTimeTableFormProceed = (event) => {
         event.preventDefault();
-        setCreationCheck(true);
         const timeTableData = {};
         for (let timeTableElement in timeTableFormState.timeTableForm) {
             timeTableData[timeTableElement] = timeTableFormState.timeTableForm[timeTableElement].value;
         }
+        delete timeTableData.id;
         //saving data
         axios.post('/timetable.json', timeTableData)
-            .then(response =>{
-                //reloading data
+            .then(() =>{
+                //Clear form
+                setTimeTableFormState(initialTimeTableForm);
+                //reloading data list
                 loadDBDataInState();
             })
             .catch(error => console.log(error));
@@ -174,28 +185,55 @@ function TimeTableForm() {
             response =>{
                 // reloading new data
               loadDBDataInState();
-         }
+              if(editionId() === idTimetable)
+                setTimeTableFormState(initialTimeTableForm);
+            }
         );
     };
 
-    const updateHandler =(event, timetableId)=>{
+    const startEditionHandler =(event, timetableId)=>{
         event.preventDefault();
         axios.get('https://haikenda-6a939.firebaseio.com/timetable/'+timetableId+'.json').then(response => {
             if (isMounted.current == true) {
                 console.log(response.data);
-                let datos=(response.data);
-                /*const formElementsArray = [];
-                for (let k in datos) {
-                    let item= datos[k]
-                    formElementsArray.push({
-                        id: k,
-                        config: item
-                    });
-                    
-                }*/
-                setUpdated(response.data);
+                fillFormToEdit(timetableId, response.data);
             }
         })
+    }
+
+    const editTimeTableFormProceed = (event, timetableId) => {
+        event.preventDefault();
+        //coger los datos del form
+        const timeTableData = {};
+        for (let timeTableElement in timeTableFormState.timeTableForm) {
+            timeTableData[timeTableElement] = timeTableFormState.timeTableForm[timeTableElement].value;
+        }
+        delete timeTableData.id; //we don't want to send the id as a param, it will be only in the URL
+        //saving data
+        axios.put('/timetable/'+timetableId+'.json', timeTableData)
+            .then(() =>{
+                //Clear form
+                setTimeTableFormState(initialTimeTableForm);
+                //reloading data list
+                loadDBDataInState();
+            })
+            .catch(error => console.log(error));
+    };
+
+    const fillFormToEdit = (id, data) => {
+        const newForm = {...timeTableFormState.timeTableForm};
+        newForm.id = {...newForm.id};
+        newForm.id.value = id;
+        newForm.id.inputConfig = {...newForm.id.inputConfig, hidden: false};
+        for (const fieldName in data) {
+            let value = data[fieldName]
+            newForm[fieldName] = {
+                ...newForm[fieldName],
+                value,
+                isValid: true
+            }
+        }
+        setTimeTableFormState({...timeTableFormState, timeTableForm: newForm});
     }
 
     /*Array to populate forms elements*/
@@ -217,6 +255,8 @@ function TimeTableForm() {
 
     }
 
+    const editionId = ()=> timeTableFormState.timeTableForm.id.value;
+
 /*Creation form method */ 
 const createForm =()=>{
     const formElementsArray = [];
@@ -228,6 +268,7 @@ const createForm =()=>{
             config: item
         });
     }
+
 let form = (
     <form id='form'>
         
@@ -243,8 +284,11 @@ let form = (
                 label={formElement.config.label}
             />
         ))}
-        <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
-        <Button btntype="Delete" clicked={clearFormHandler}>Borrar</Button>
+        { editionId() //we consider that is and edition when we already have an ID 
+            ? <Button btntype="Edit" clicked={(event) => editTimeTableFormProceed(event, editionId())}>Editar horario</Button> 
+            : <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
+        }
+        <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
     </form>
     );
     return form;
@@ -261,7 +305,7 @@ const createTable= ()=>{
             <TimeTableContainer key={elemento.id} title={elemento.datos.title} startTime={elemento.datos.startTime} 
                 endTime={elemento.datos.endTime} onClick={
                     (event)=>erasehandler(event,elemento.id)}
-                    toupdate={(event)=>updateHandler(event,elemento.id)}
+                    toupdate={(event)=>startEditionHandler(event,elemento.id)}
                 />
         ))}
         </div>
