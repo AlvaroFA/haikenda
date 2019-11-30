@@ -92,17 +92,20 @@ function TimeTableForm() {
         }
     }
 
-    useEffect(() => {
-
+    const loadDBDataInState = ()=>{
         axios.get('https://haikenda-6a939.firebaseio.com/timetable.json').then(response => {
             if (isMounted.current == true) {
                 setData(response.data);
             }
         })
+    }
+
+    useEffect(() => {
+        loadDBDataInState();
         return (() => {
             isMounted.current = false;
         });
-    });
+    }, []);
 
 
     useEffect(()=>{
@@ -144,9 +147,11 @@ function TimeTableForm() {
         for (let timeTableElement in timeTableFormState.timeTableForm) {
             timeTableData[timeTableElement] = timeTableFormState.timeTableForm[timeTableElement].value;
         }
-        axios.post('/timetable.json', timeTableData).then(response => (response))
+        axios.post('/timetable.json', timeTableData)
+            .then(response =>{
+                loadDBDataInState();
+            })
             .catch(error => console.log(error));
-        setData(timeTableData);
     }
 
 
