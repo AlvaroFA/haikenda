@@ -1,12 +1,13 @@
 import React from 'react';
-import { tsPropertySignature } from '@babel/types';
+import Button from '../../components/UI/Button/Button'
 
 
-const TimeTableContainer = (props)=> (
+const TimeTableContainer = (props) => (
     <div className='TimeTableContainer'>
-    <p>Titulo: {props.title}</p>
-    <p>De: {props.startTime} a {props.endTime} </p>
+        <p>Titulo: {props.title}</p>
+        <p>De: {props.startTime} a {props.endTime} </p>
+        <Button clicked={props.onClick}>Borrar</Button>
     </div>
 );
-    
-    export default TimeTableContainer;
+
+export default TimeTableContainer;

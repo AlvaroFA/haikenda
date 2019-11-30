@@ -107,16 +107,6 @@ function TimeTableForm() {
         });
     }, []);
 
-
-    useEffect(()=>{
-        for (let k in dataState) {
-            timeTableElementsArray.push({
-                id:  k,
-                datos:dataState[k]
-            });
-        }
-    });
-
     const inputChangeHandler = (event, inputId) => { 
         event.preventDefault();       // cloning the data 
         const newTimeTableForm = {
@@ -152,8 +142,19 @@ function TimeTableForm() {
                 loadDBDataInState();
             })
             .catch(error => console.log(error));
-    }
+    };
 
+    const erasehandler=(event,idTimetable)=>{
+        console.log(idTimetable);
+        event.preventDefault();
+        console.log('borrar');
+        axios.delete('https://haikenda-6a939.firebaseio.com/timetable/'+idTimetable+'.json').then(
+            response =>{
+              loadDBDataInState();
+                console.log(response)
+         }
+        );
+    };
 
     const formElementsArray = [];
     for (let k in timeTableFormState.timeTableForm) {
@@ -169,6 +170,7 @@ function TimeTableForm() {
             datos:dataState[k]
         });
     }
+
 let form = (
     <form id='form'>
         {formElementsArray.map(formElement => (
@@ -193,7 +195,10 @@ let form = (
 let table = (
     <div>
     {timeTableElementsArray.map(elemento=>(
-        <TimeTableContainer key={elemento.id} title={elemento.datos.title} startTime={elemento.datos.startTime} endTime={elemento.datos.endTime} />
+        <TimeTableContainer key={elemento.id} title={elemento.datos.title} startTime={elemento.datos.startTime} 
+            endTime={elemento.datos.endTime} onClick={
+                (event)=>erasehandler(event,elemento.id)}
+            />
     ))}
     </div>
 );
