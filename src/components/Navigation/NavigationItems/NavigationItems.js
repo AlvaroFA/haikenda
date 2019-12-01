@@ -9,6 +9,7 @@ const navigationItems = ()=>(
         <NavigationItem link="/" active>Inicio</NavigationItem>
         <NavigationItem link="/signup" active>Usuarios</NavigationItem>
         <NavigationItem link="/timetableform" active>Crear Horario</NavigationItem>           
+        <NavigationItem link="/workshift" active>Gestion Turnos</NavigationItem>           
     </ul>
 );
 

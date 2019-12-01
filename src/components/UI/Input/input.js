@@ -11,8 +11,15 @@ const Input = (props)=>{
             inputElement = <textarea {...props.inputConfig} value={props.value}  onChange={props.changed}/>;
             break;
         case ('input'):
-             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
-            break;                
+            inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
+            break;    
+        case ('select'):
+            inputElement = (
+                <select {...props.inputConfig} value={props.value} onChange={props.changed}>
+                    {props.children}
+                </select>
+            );
+            break;
         default:
             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
     }
