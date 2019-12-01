@@ -37,7 +37,7 @@ const TimeTableFullCalendar = () => {
     })
 
 
-    axios.get('https://haikenda-6a939.firebaseio.com/timetable.json').then(response => {
+    axios.get('https://haikenda-6a939.firebaseio.com/workshift.json').then(response => {
       if (isMounted.current == true) {
         setWorkShiftData(response.data);
       }
@@ -63,90 +63,103 @@ const TimeTableFullCalendar = () => {
           title: items[v].name
         });
       }
-      console.log(workerArray)
     }
 
     return workerArray;
   };
 
   const getWorkShiftDataHandler = () => {
-     const workShiftDataArray = [];
+    const workShiftDataArray = [];
     for (let k in workShiftData) {
       let items = workShiftData[k];
-      for (let v in items) {
-        workShiftDataArray.push({
-          timetable: items[v].timetable,
-          worker: items[v].worker
-        });
-      }
-      return workShiftDataArray;
+      workShiftDataArray.push({
+        timetable: items.timetable,
+        worker: items.worker
+      });
     }
-  };
+    console.log(workShiftDataArray)
+    return workShiftDataArray;
+};
 
-  const getTimeTableDataHandler = () => {
-    const timeTableDataArray = [];
-    for (let k in timeTableData) {
-      let items = timeTableData[k];
-      for (let v in items) {
-        timeTableDataArray.push({
-          timetable: items[v].timetable,
-          worker: items[v].worker
-        });
-      }
-      return timeTableDataArray;
-    }
-  };
+const getTimeTableDataHandler = () => {
+  const timeTableDataArray = [];
+  for (let k in timeTableData) {
+    let item = timeTableData[k]
+    timeTableDataArray.push({
+      endTime: item.endTime,
+      startTime: item.startTime,
+      title: item.title
+
+    });
+  }
+  console.log(timeTableDataArray)
+  return timeTableDataArray;
+};
+
+const eventBuilder = () => {
+  const events = [];
+  getWorkShiftDataHandler();
+  getTimeTableDataHandler();
 
 
-  
+  return events;
+}
 
 
 
 
-  return (
-    <div className="TimeTableFullCalendar">
-      <FullCalendar
-        defaultView="resourceTimeline"
-        plugins={[resourceTimelinePlugin]}
-        header={{
-          left: 'prev,next ,today',
-          center: 'title',
-          // TO DO MODIFY BUTTON CALENDAR
-          right: 'resourceTimelineMonth, resourceTimelineDay, resourceTimeline'
-        }}
-        locale='es'
-        firstDay={1}
-        nowIndicator={true}
-        schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
-        resources=
-        {getDataWorker()}
 
-        /*{[
-          {
-            id: 'a',
-            title: 'Room A'
-          },{
-            id:'2',
-            title: 'trabajador 2'
-  
-          }
-        ]}
-        */
-        events={[
-          {
-            resourceId: '65sfCQ8su3acXRyK24PDPWiv16u1',
-            id: '1',
-            title: 'turno3',
-            start: '2019-12-01 ',
-            end: '2019-12-02',
+return (
+  <div className="TimeTableFullCalendar">
+    <FullCalendar
+      defaultView="resourceTimeline"
+      plugins={[resourceTimelinePlugin]}
+      header={{
+        left: 'prev,next ,today',
+        center: 'title',
+        // TO DO MODIFY BUTTON CALENDAR
+        right: 'resourceTimelineMonth, resourceTimelineDay, resourceTimeline'
+      }}
+      locale='es'
+      firstDay={1}
+      nowIndicator={true}
+      schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
+      resources=
+      {getDataWorker()}
 
-          }
-        ]
+      /*{[
+        {
+          id: 'a',
+          title: 'Room A'
+        },{
+          id:'2',
+          title: 'trabajador 2'
+ 
         }
-      />
+      ]}
+      */
+      events={eventBuilder()}
 
 
-    </div>
-  );
+
+
+
+    /*{[
+      {
+        resourceId: '65sfCQ8su3acXRyK24PDPWiv16u1',
+        id: '1',
+        title: 'turno3',
+        start: '2019-12-01 ',
+        end: '2019-12-02',
+
+      }
+    ]
+    }
+    */
+    />
+
+
+  </div>
+);
 };
 export default TimeTableFullCalendar;

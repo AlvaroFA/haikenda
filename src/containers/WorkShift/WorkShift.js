@@ -8,36 +8,48 @@ import Input from '../../components/UI/Input/Input';
 /* Component who assign worker to a timetable */
 
 const initialWorkShiftFormData = {
-        worker: {
-            elementType: 'select',
-            value: '',
-            label:'Empleado',
-            validation: {
-                required: true
-            },
-            isValid: false,
+    worker: {
+        elementType: 'select',
+        value: '',
+        label: 'Empleado',
+        validation: {
+            required: true
         },
-        timetable: {
-            elementType: 'select',
-            value: '',
-            label:'Horario',
-            validation: {
-                required: true
-            },
-            isValid: false,
+        isValid: false,
+    },
+    timetable: {
+        elementType: 'select',
+        value: '',
+        label: 'Horario',
+        validation: {
+            required: true
         },
-        date: {
-            elementType: 'input',
-            inputConfig: {
-                type: 'date',
-            },
-            value: '',
-            label:'Fecha',
-            validation: {
-                required: true,
-            },
-            isValid: false
+        isValid: false,
+    },
+    startTime: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'date',
         },
+        value: '',
+        label: 'Dia inicial',
+        validation: {
+            required: true,
+        },
+        isValid: false
+    },
+    endTime: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'date',
+        },
+        value: '',
+        label: 'Dia  final',
+        validation: {
+            required: true,
+        },
+        isValid: false
+    }
 }
 
 
@@ -100,8 +112,7 @@ const WorkShift = () => {
         }
         const formElement = workShiftFormData.worker;
         let workerList = (
-            <div>
-                <Input 
+                <Input
                     key={"worker"}
                     elementType={formElement.elementType}
                     inputConfig={formElement.inputConfig}
@@ -118,22 +129,21 @@ const WorkShift = () => {
                         ></option>
                     ))}
                 </Input>
-            </div>
         );
 
         return workerList;
     }
 
-    const createWorkshift= (event) => {
+    const createWorkshift = (event) => {
         event.preventDefault();
         const workshiftData = {};
-        for (let  field in workShiftFormData) {
+        for (let field in workShiftFormData) {
             workshiftData[field] = workShiftFormData[field].value;
         }
         delete workshiftData.id;
         //saving data
         axios.post('/workshift.json', workshiftData)
-            .then(() =>{
+            .then(() => {
                 //Clear form
                 setWorkShiftFormData(initialWorkShiftFormData);
                 //reloading data list
@@ -153,15 +163,14 @@ const WorkShift = () => {
         }
         const formElement = workShiftFormData.timetable;
         let timeTableList = (
-            <div>
-                <Input 
+                <Input
                     key={"timetable"}
                     elementType={formElement.elementType}
                     inputConfig={formElement.inputConfig}
                     value={formElement.value}
                     incorrectValues={!formElement.isValid}
                     changed={(evt) => inputChangeHandler(evt, "timetable")}
-                    label={formElement.label}>                
+                    label={formElement.label}>
                     <option label="--Seleccione una opcion--"></option>
                     {timertableArray.map(option => (
                         <option
@@ -171,46 +180,57 @@ const WorkShift = () => {
                         ></option>
                     ))}
                 </Input>
-            </div>
-
         );
         return timeTableList;
     }
+
 
     const clearFormHandler = (event) => {
         event.preventDefault();
         setWorkShiftFormData(initialWorkShiftFormData);
     }
 
-    const saveForm = (event)=> {
+    const saveForm = (event) => {
         //TODO
     }
 
 
-    let form = (
-        <form>
-            {fillworkerSelect()}
-            {fillTimeTableSelect()}
-            <input type='date' label="Dia asignado"></input>
-            <Button btntype="Save" clicked={createWorkshift}>  Guardar</Button>
-            <Button btntype="Reset" clicked={clearFormHandler}> Reiniciar</Button>
-        </form>
-
-
-
-    );
-
+    const formElementsArray = [];
+    console.log(workShiftFormData)
+    for (let k in workShiftFormData) {
+        let item = workShiftFormData[k]
+        formElementsArray.push({
+            id: k,
+            config: item
+        });
+    }
 
     return (
         <Border>
             <h1>Gestión del turno</h1>
-            {form}
-        </Border>
+            <form id="form">
+                
+                {formElementsArray.map((formElement) => (
+                    //Populating input component, create once for each form element
+                    formElement.id==='worker' ? fillworkerSelect()
+                    : formElement.id === 'timetable' ? fillTimeTableSelect()
+                    : <Input
+                        key={formElement.id}
+                        elementType={formElement.config.elementType}
+                        inputConfig={formElement.config.inputConfig}
+                        value={formElement.config.value}
+                        incorrectValues={!formElement.config.isValid}
+                        changed={(evt) => inputChangeHandler(evt, formElement.id)}
+                        label={formElement.config.label}
+                    />
+                ))}
 
+                <Button btntype="Save" clicked={createWorkshift}>Guardar</Button>                
+                <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
+
+            </form>
+        </Border>
     )
 }
-
-
-
 
 export default WorkShift;
