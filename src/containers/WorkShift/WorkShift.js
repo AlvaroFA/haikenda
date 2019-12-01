@@ -124,6 +124,24 @@ const WorkShift = () => {
         return workerList;
     }
 
+    const createWorkshift= (event) => {
+        event.preventDefault();
+        const workshiftData = {};
+        for (let  field in workShiftFormData) {
+            workshiftData[field] = workShiftFormData[field].value;
+        }
+        delete workshiftData.id;
+        //saving data
+        axios.post('/workshift.json', workshiftData)
+            .then(() =>{
+                //Clear form
+                setWorkShiftFormData(initialWorkShiftFormData);
+                //reloading data list
+                loadDBDataInState();
+            })
+            .catch(error => console.log(error));
+    };
+
     const fillTimeTableSelect = () => {
         const timertableArray = [];
         for (let id in timeTableData) {
@@ -173,8 +191,8 @@ const WorkShift = () => {
         <form>
             {fillworkerSelect()}
             {fillTimeTableSelect()}
-            <Input elementType=""></Input>
-            <Button btntype="Save" clicked={saveForm}>  Guardar</Button>
+            <input type='date' label="Dia asignado"></input>
+            <Button btntype="Save" clicked={createWorkshift}>  Guardar</Button>
             <Button btntype="Reset" clicked={clearFormHandler}> Reiniciar</Button>
         </form>
 
@@ -185,7 +203,7 @@ const WorkShift = () => {
 
     return (
         <Border>
-            <h1>asdlkajdl</h1>
+            <h1>Gestión del turno</h1>
             {form}
         </Border>
 

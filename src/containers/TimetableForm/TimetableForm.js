@@ -33,6 +33,15 @@ const initialTimeTableForm = {
             },
             isValid: false,
         },
+        Monday: {
+            elementType: 'input',
+            inputConfig: {
+                type: 'checkbox',
+                name: 'L',
+            },
+            value: '',
+            label: 'L',
+        },
         weekly: {
             elementType: 'input',
             inputConfig: {
