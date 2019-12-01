@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import './SignUp.css';
 import Input from '../../components/UI/Input/Input';
 import Border from '../../components/hoc/Border';
-import axios from '../../axios.app';
+import Workers from '../../providers/WorkersProvider';
+import useOperationState from '../../hooks/OperationState';
 
 /**
  * Checks that a string is a strong password:
@@ -101,11 +102,18 @@ const initialWorkerForm = {
     }
 }
 
-const initialOperationResult = {};
 
 function SignUp() {
     const [workerForm, setWorkerForm] = useState(initialWorkerForm);
-    const [operationResult, setOperationResult] = useState(initialOperationResult);
+    const {operation,
+        OPERATIONS,
+        hasFailed,
+        isWaitingForOperation,
+        failOperation,
+        successOperation,
+        startOperation,
+        clearOperation
+    } = useOperationState();
 
     /**
      * Checks if all validation are correct
@@ -142,40 +150,8 @@ function SignUp() {
     }
 
     const clearForm = () => {
-        setOperationResult(initialOperationResult);
+        clearOperation();
         setWorkerForm(initialWorkerForm);
-    }
-
-    const submitFailed = () => {
-        return operationResult.failed && operationResult.operation==='submit'
-    }
-
-    const failSubmitOperation = (error)=>{
-        let reason = error.message;
-        if(error.response && error.response.data && error.response.data.error) reason = error.response.data.error;
-        setOperationResult({
-            failed: true,
-            operation: 'submit',
-            reason
-        });
-    }
-
-    const isWaitingForOperation = ()=> {
-        return operationResult.waiting;
-    }
-
-    const startSubmitOperation = ()=> {
-        setOperationResult({
-            waiting: true,
-            operation: 'submit'
-        });
-    }
-
-    const successSubmitOperation = () => {
-        setOperationResult({
-            success: true,
-            operation: 'submit'
-        });
     }
 
     const getValuesFromForm = ()=> {
@@ -186,26 +162,25 @@ function SignUp() {
     }
 
     // submit form method
-    const signUpProceed = () => {
+    const signUpProceed = (event) => {
         event.preventDefault();
 
         //only submit if it's valid
         if(!isValid()) {
-            failSubmitOperation("Algún dato no es válido");
+            failOperation(OPERATIONS.CREATE,"Algún dato no es válido");
             return;
         }
 
-        startSubmitOperation();
+        startOperation(OPERATIONS.CREATE);
 
-        axios.post('/workers.json', {
-            worker: getValuesFromForm()
-        })
+        const newWorker = getValuesFromForm();
+        Workers.createWorker(newWorker)
         .then(result => {
-            successSubmitOperation();
+            successOperation(OPERATIONS.CREATE);
             clearForm();
         })
         .catch(error => {
-            failSubmitOperation(error);
+            failOperation(OPERATIONS.CREATE,error);
         });
     };
 
@@ -237,10 +212,10 @@ function SignUp() {
         });
     }
     let state;
-    if(operationResult.operation==='submit') {
-        if(operationResult.waiting) state = <p className="state waiting">Guardando...</p>
-        else if (operationResult.success) state = <p className="state success">Usuario guardado</p>
-        else if (operationResult.failed) state = <p className="state failed">{"No se pudo guardar el usuario: "+operationResult.reason}</p>
+    if(operation.operation==='submit') {
+        if(operation.waiting) state = <p className="state waiting">Guardando...</p>
+        else if (operation.success) state = <p className="state success">Usuario guardado</p>
+        else if (operation.failed) state = <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
     }
 
     const form = (
@@ -253,7 +228,7 @@ function SignUp() {
                         elementType={formElement.config.elementType}
                         inputConfig={formElement.config.inputConfig}
                         value={formElement.config.value}
-                        incorrectValues={submitFailed() || formElement.config.edited ? formElement.config.validationErrors : undefined}
+                        incorrectValues={hasFailed(OPERATIONS.CREATE) || formElement.config.edited ? formElement.config.validationErrors : undefined}
                         changed={(evt) => inputChangeHandler(evt, formElement.id)}
                         label={formElement.config.label}
                     />
