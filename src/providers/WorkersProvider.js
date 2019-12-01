@@ -1,4 +1,9 @@
 import axios from '../axios.app';
+import firebase from 'firebase';
+import firebaseConfig from '../components/firebase/config';
+
+const userRegisterApp = firebase.initializeApp(firebaseConfig, "UserRegister");
+userRegisterApp.auth().languageCode = 'es';
 
 /**
  * @return {Promise<Object>}

@@ -6,14 +6,14 @@ import SideMenu from '../Navigation/SideMenu/SideMenu';
 
 //import Timetable from '../../containers/TimeTable';
 
-const layout = (props)=>(
+const layout = ({children, signout})=>(
     <Border>
        <SideMenu/>
-        <MenuBar/>
+        <MenuBar signout={signout}/>
        
 
         <main>
-            {props.children}
+            {children}
         </main>
     </Border>
 );
