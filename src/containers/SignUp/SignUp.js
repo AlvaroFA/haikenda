@@ -159,6 +159,7 @@ function SignUp() {
         for (let formWorkElement in workerForm) {
             formWorkerData[formWorkElement] = workerForm[formWorkElement].value;
         }
+        return formWorkerData;
     }
 
     // submit form method
