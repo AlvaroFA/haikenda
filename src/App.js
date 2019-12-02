@@ -13,6 +13,7 @@ import 'firebase/database';
 import firebaseConfig from './components/firebase/config';
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
+firebaseApp.auth().languageCode = 'es';
 
 class App extends Component {
 
