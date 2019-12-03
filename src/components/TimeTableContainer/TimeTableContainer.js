@@ -7,8 +7,8 @@ const TimeTableContainer = (props) => (
     <div className='TimeTableContainer'>
         <p>Titulo: {props.title}</p>
         <p>De: {props.startTime} a {props.endTime} </p>
-        <Button clicked={props.onClick}>Borrar</Button>
-        <Button clicked={props.toupdate}>Editar</Button>
+        <Button clicked={props.onClick} disabled={props.disabled} >Borrar</Button>
+        <Button clicked={props.toupdate} disabled={props.disabled}>Editar</Button>
     </div>
 );
 

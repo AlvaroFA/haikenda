@@ -27,10 +27,9 @@ const initialTimeTableForm = {
             },
             value: '',
             label: 'Repetir una vez',
-            validation: {
-                required: true,
-            },
-            isValid: false,
+            edited: false,
+            isValid: true,
+            validationErrors: []
         },
         weekly: {
             elementType: 'input',
@@ -40,10 +39,8 @@ const initialTimeTableForm = {
             },
             value: '',
             label: 'Semanalmente',
-            validation: {
-                required: true,
-            },
-            isValid: false,
+            isValid: true,
+            validationErrors: []
 
         },
         title: {
@@ -57,7 +54,9 @@ const initialTimeTableForm = {
             validation: {
                 required: true,
             },
-            isValid: false
+            edited: false,
+            isValid: false,
+            validationErrors: ["Campo obligatorio"]
         },
         startTime: {
             elementType: 'input',
@@ -70,7 +69,9 @@ const initialTimeTableForm = {
             validation: {
                 required: true
             },
-            isValid: false
+            edited: false,
+            isValid: false,
+            validationErrors: ["Campo obligatorio"]
         },
         endTime: {
             elementType: 'input',
@@ -81,9 +82,12 @@ const initialTimeTableForm = {
             value: '',
             label: 'Hora de Fin',
             validation: {
-                required: true
+                required: true,
+                greaterThan: 'startTime'
             },
-            isValid: false
+            edited: false,
+            isValid: false,
+            validationErrors: ["Campo obligatorio"]
         }
     }
 
@@ -97,24 +101,52 @@ function TimeTableForm() {
     const [timeTableFormState, setTimeTableFormState] = useState(initialTimeTableForm);
     const [dataState, setData] = useState(data);
     const isMounted = useRef(true);
+    const {operation,
+        OPERATIONS,
+        hasFailed,
+        isWaitingForOperation,
+        failOperation,
+        successOperation,
+        startOperation,
+        clearOperation
+    } = useOperationState();
 
     //validation method
     const checkValidation = (value, rules) => {
         if(!rules) return true;
 
-        let itsOk;
+        let validationErrors = [];
         if (rules.required) {
-            itsOk = value.trim() !== '' ? true : false;
+            const isEmpty = value.trim() === '';
+            if (isEmpty){
+                validationErrors.push("Campo obligatorio");
+                return validationErrors;
+            }
         }
+
+        if (rules.afterThat) {
+            let field = rules.afterThat;
+            field = timeTableFormState.timeTableForm[field];
+            const otherValue = field.value;
+            if(value > otherValue){
+                validationErrors.push(`Tiene que ser posterior a '${field.label}'`);
+            }
+        }
+
+        return validationErrors;
     }
 
     //Variable to fecthing values from DDBB
     const loadDBDataInState = ()=>{
+        startOperation(OPERATIONS.FETCH);
         provider.fetchTimetables().then(response => {
             if (isMounted.current == true) {
                 setData(response.data);
+                successOperation(OPERATIONS.FETCH);
             }
-        })
+        }).catch((error)=> {
+            failOperation(OPERATIONS.FETCH, error);
+        });
     }
 
     //Using isMounted to avoid race condition 
@@ -147,6 +179,7 @@ function TimeTableForm() {
     // Clear form
     const clearFormHandler = (event) => {
         event.preventDefault();
+        clearOperation();
         setTimeTableFormState(initialTimeTableForm);
     }
 
@@ -162,14 +195,19 @@ function TimeTableForm() {
         }
         delete timeTableData.id;
         //saving data
+        startOperation(OPERATIONS.CREATE);
         provider.createTimetable(timeTableData)
             .then(() =>{
                 //Clear form
                 setTimeTableFormState(initialTimeTableForm);
                 //reloading data list
                 loadDBDataInState();
+                successOperation(OPERATIONS.CREATE);
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                console.log(error);
+                failOperation(OPERATIONS.CREATE, error);
+            });
     };
 
     /*EraseMethod
@@ -180,24 +218,35 @@ function TimeTableForm() {
         event.preventDefault();
         console.log('borrar');
         // execiting delete method
-        provider.deleteTimetable(idTimetable).then(
-            response =>{
-                // reloading new data
-              loadDBDataInState();
-              if(editionId() === idTimetable)
+        startOperation(OPERATIONS.DELETE);
+        provider.deleteTimetable(idTimetable)
+        .then(response =>{
+            // reloading new data
+            loadDBDataInState();
+            if(editionId() === idTimetable) {
                 setTimeTableFormState(initialTimeTableForm);
             }
-        );
+            successOperation(OPERATIONS.DELETE);
+        })
+        .catch(error => {
+            console.log(error);
+            failOperation(OPERATIONS.DELETE, error);
+        });
     };
 
     const startEditionHandler =(event, timetableId)=>{
         event.preventDefault();
+        startOperation(OPERATIONS.FETCH);
         provider.fetchOneTimetable(timetableId).then(response => {
             if (isMounted.current == true) {
                 console.log(response.data);
                 fillFormToEdit(timetableId, response.data);
+                successOperation(OPERATIONS.FETCH);
             }
-        })
+        }).catch(error => {
+            console.log(error);
+            failOperation(OPERATIONS.FETCH, error);
+        });
     }
 
     const editTimeTableFormProceed = (event, timetableId) => {
@@ -209,14 +258,19 @@ function TimeTableForm() {
         }
         delete timeTableData.id; //we don't want to send the id as a param, it will be only in the URL
         //saving data
+        startOperation(OPERATIONS.UPDATE);
         provider.updateTimetable(timetableId, timeTableData)
             .then(() =>{
                 //Clear form
                 setTimeTableFormState(initialTimeTableForm);
                 //reloading data list
                 loadDBDataInState();
+                successOperation(OPERATIONS.UPDATE);
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                console.log(error);
+                failOperation(OPERATIONS.UPDATE);
+            });
     };
 
     const fillFormToEdit = (id, data) => {
@@ -268,27 +322,31 @@ const createForm =()=>{
         });
     }
 
+const failedCreationOrEdition = hasFailed(OPERATIONS.CREATE) || hasFailed(OPERATIONS.UPDATE); 
+
 let form = (
-    <form id='form'>
-        
-        {formElementsArray.map(formElement => ( 
-            //Populating input component, create once for each form element
-            <Input
-                key={formElement.id}
-                elementType={formElement.config.elementType}
-                inputConfig={formElement.config.inputConfig}
-                value={formElement.config.value}
-                incorrectValues={!formElement.config.isValid}
-                changed={(evt) => inputChangeHandler(evt, formElement.id)}
-                label={formElement.config.label}
-            />
-        ))}
-        { editionId() //we consider that is and edition when we already have an ID 
-            ? <Button btntype="Edit" clicked={(event) => editTimeTableFormProceed(event, editionId())}>Editar horario</Button> 
-            : <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
-        }
-        <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
-    </form>
+    <fieldset disabled={isWaitingForOperation()}>
+        <form id='form'>
+            
+            {formElementsArray.map(formElement => ( 
+                //Populating input component, create once for each form element
+                <Input
+                    key={formElement.id}
+                    elementType={formElement.config.elementType}
+                    inputConfig={formElement.config.inputConfig}
+                    value={formElement.config.value}
+                    incorrectValues={failedCreationOrEdition || formElement.config.edited ? formElement.config.validationErrors : undefined}
+                    changed={(evt) => inputChangeHandler(evt, formElement.id)}
+                    label={formElement.config.label}
+                />
+            ))}
+            { editionId() //we consider that is and edition when we already have an ID 
+                ? <Button btntype="Edit" clicked={(event) => editTimeTableFormProceed(event, editionId())}>Editar horario</Button> 
+                : <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
+            }
+            <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
+        </form>
+    </fieldset>
     );
     return form;
 };
@@ -301,11 +359,15 @@ const createTable= ()=>{
         <div>
         {timeTableElementsArray.map(elemento=>(
             // Creation  TimeTable element and populating
-            <TimeTableContainer key={elemento.id} title={elemento.datos.title} startTime={elemento.datos.startTime} 
-                endTime={elemento.datos.endTime} onClick={
-                    (event)=>erasehandler(event,elemento.id)}
-                    toupdate={(event)=>startEditionHandler(event,elemento.id)}
-                />
+            <TimeTableContainer 
+                key={elemento.id} 
+                title={elemento.datos.title} 
+                startTime={elemento.datos.startTime} 
+                endTime={elemento.datos.endTime} 
+                onClick={(event)=>erasehandler(event,elemento.id)}
+                toupdate={(event)=>startEditionHandler(event,elemento.id)}
+                disabled={isWaitingForOperation()}
+            />
         ))}
         </div>
     );
