@@ -150,6 +150,7 @@ function SignUp() {
     }
 
     const clearForm = () => {
+        event.preventDefault();
         clearOperation();
         setWorkerForm(initialWorkerForm);
     }
