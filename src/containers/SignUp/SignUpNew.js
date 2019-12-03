@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, {useState } from 'react';
 import Button from '../../components/UI/Button/Button';
 import './SignUp.css';
 import Input from '../../components/UI/Input/Input';

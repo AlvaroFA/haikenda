@@ -12,10 +12,10 @@ class App extends Component {
       <div>
         <Layout>
           <Switch>
-            <Route  path= "/" exact component={TimeTableFullCalendar} />
-            <Route  path= "/signup" component={SignUp} />
-            <Route  path= "/timeTableForm" component={TimeTableform} />
-            <Route  path= "/workshift" component={Workshift} />
+            <Route  path="/" exact component={TimeTableFullCalendar} />
+            <Route  path="/signup" component={SignUp} />
+            <Route  path="/timeTableForm" component={TimeTableform} />
+            <Route  path="/workshift" component={Workshift} />
           </Switch>
         </Layout>
       </div>

@@ -8,21 +8,21 @@ import '../../../node_modules/@fullcalendar/resource-timeline/main.css';
 import '../../../node_modules/@fullcalendar/timeline/main.css';
 import './TimeTableFullCalendar.css'
 
-
-
-
-
-
-
-
+const initialEventValues={
+    resourceId: '',
+    id: '',
+    title: '',
+    start: '',
+    end: ''
+}
 
 const TimeTableFullCalendar = () => {
   const isMounted = useRef(true);
   const [workerData, setWorkerData] = useState({});
   const [timeTableData, setTimeTableData] = useState({});
-  const [workShiftData, setWorkShiftData] = useState({});
-
-
+  const [workShiftData, setWorkShiftData] = useState(initialWorkShiftData);
+  const [eventData,setEventData] = useState(initialEventValues);
+  const initialWorkShiftData={};
   const loadDBDataInState = () => {
     axios.get('https://haikenda-6a939.firebaseio.com/workers.json').then(response => {
       if (isMounted.current == true) {
@@ -60,7 +60,7 @@ const TimeTableFullCalendar = () => {
       for (let v in items) {
         workerArray.push({
           id: k,
-          title: items[v].name
+          title: items[v].name + items[v].surname
         });
       }
     }
@@ -69,16 +69,18 @@ const TimeTableFullCalendar = () => {
   };
 
   const getWorkShiftDataHandler = () => {
-    const workShiftDataArray = [];
-    for (let k in workShiftData) {
-      let items = workShiftData[k];
-      workShiftDataArray.push({
-        timetable: items.timetable,
-        worker: items.worker
-      });
+    /*model*/
+    /*
+{-LvCSadkljDMgB08IT9d: {…}, -LvCScxj7f6fkCJ1I4sM: {…}}
+-LvCSadkljDMgB08IT9d: {endTime: "", startTime: "", timetable: "", worker: ""}
+-LvCScxj7f6fkCJ1I4sM: {endTime: "", startTime: "", timetable: "-Lv0o9DxcM_4hJb4kQAn", worker: "-LvC1rHaeEKDJ1tMrpzU"}
+    */
+   let workerId={};
+   let data = workShiftData;
+    for( let idWorkshift in data){
+        workerId=idWorkshift;
     }
-    console.log(workShiftDataArray)
-    return workShiftDataArray;
+  return workerId; 
 };
 
 const getTimeTableDataHandler = () => {
@@ -89,20 +91,32 @@ const getTimeTableDataHandler = () => {
       endTime: item.endTime,
       startTime: item.startTime,
       title: item.title
-
     });
   }
-  console.log(timeTableDataArray)
   return timeTableDataArray;
 };
 
 const eventBuilder = () => {
-  const events = [];
-  getWorkShiftDataHandler();
-  getTimeTableDataHandler();
+  const eventData=[];
+  const workShiftData= getWorkShiftDataHandler();
+  const timeTableData = getTimeTableDataHandler();
+  for (let k in eventData) {
+    let items = eventData[k];
+ 
+    for (let v in items) {
 
 
-  return events;
+      eventData.push({
+        resourceId: "",
+        id: workShiftData,
+        title: '',
+        start: '',
+        end: ''
+      });
+      console.log(eventData);
+    }
+  }
+  return eventData;
 }
 
 
@@ -157,8 +171,6 @@ return (
     }
     */
     />
-
-
   </div>
 );
 };

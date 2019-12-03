@@ -3,6 +3,7 @@ import Border from '../../components/hoc/Border';
 import axios from '../../axios.app';
 import Button from '../../components/UI/Button/Button';
 import Input from '../../components/UI/Input/Input';
+import WorkShiftContainer from '../../components/WorkShiftContainer/WorkShiftContainer';
 
 
 /* Component who assign worker to a timetable */
@@ -58,16 +59,23 @@ const WorkShift = () => {
     const [workShiftFormData, setWorkShiftFormData] = useState(initialWorkShiftFormData);
     const [workerData, setWorkerData] = useState({});
     const [timeTableData, setTimeTableData] = useState({});
+    const [workShitData, setworkShiftData] = useState({});
     const loadDBDataInState = () => {
         axios.get('https://haikenda-6a939.firebaseio.com/workers.json').then(response => {
-            if (isMounted.current == true) {
+            if (isMounted.current === true) {
                 setWorkerData(response.data);
             }
         })
 
         axios.get('https://haikenda-6a939.firebaseio.com/timetable.json').then(response => {
-            if (isMounted.current == true) {
+            if (isMounted.current === true) {
                 setTimeTableData(response.data);
+            }
+        })
+
+        axios.get('https://haikenda-6a939.firebaseio.com/workshift.json').then(response => {
+            if (isMounted.current === true) {
+                setworkShiftData(response.data);
             }
         })
 
@@ -112,23 +120,23 @@ const WorkShift = () => {
         }
         const formElement = workShiftFormData.worker;
         let workerList = (
-                <Input
-                    key={"worker"}
-                    elementType={formElement.elementType}
-                    inputConfig={formElement.inputConfig}
-                    value={formElement.value}
-                    incorrectValues={!formElement.isValid}
-                    changed={(evt) => inputChangeHandler(evt, "worker")}
-                    label={formElement.label} >
-                    <option value="" label="--Seleccione una opcion--"></option>
-                    {workerArray.map(option => (
-                        <option
-                            key={option.id}
-                            value={option.id}
-                            label={option.config.name + " " + option.config.surname}
-                        ></option>
-                    ))}
-                </Input>
+            <Input
+                key={"worker"}
+                elementType={formElement.elementType}
+                inputConfig={formElement.inputConfig}
+                value={formElement.value}
+                incorrectValues={!formElement.isValid}
+                changed={(evt) => inputChangeHandler(evt, "worker")}
+                label={formElement.label} >
+                <option value="" label="--Seleccione una opcion--"></option>
+                {workerArray.map(option => (
+                    <option
+                        key={option.id}
+                        value={option.id}
+                        label={option.config.name + " " + option.config.surname}
+                    ></option>
+                ))}
+            </Input>
         );
 
         return workerList;
@@ -163,74 +171,169 @@ const WorkShift = () => {
         }
         const formElement = workShiftFormData.timetable;
         let timeTableList = (
-                <Input
-                    key={"timetable"}
-                    elementType={formElement.elementType}
-                    inputConfig={formElement.inputConfig}
-                    value={formElement.value}
-                    incorrectValues={!formElement.isValid}
-                    changed={(evt) => inputChangeHandler(evt, "timetable")}
-                    label={formElement.label}>
-                    <option label="--Seleccione una opcion--"></option>
-                    {timertableArray.map(option => (
-                        <option
-                            key={option.id}
-                            value={option.id}
-                            label={option.config.title + " (" + option.config.startTime + "-" + option.config.endTime + ")"}
-                        ></option>
-                    ))}
-                </Input>
+            <Input
+                key={"timetable"}
+                elementType={formElement.elementType}
+                inputConfig={formElement.inputConfig}
+                value={formElement.value}
+                incorrectValues={!formElement.isValid}
+                changed={(evt) => inputChangeHandler(evt, "timetable")}
+                label={formElement.label}>
+                <option label="--Seleccione una opcion--"></option>
+                {timertableArray.map(option => (
+                    <option
+                        key={option.id}
+                        value={option.id}
+                        label={option.config.title + " (" + option.config.startTime + "-" + option.config.endTime + ")"}
+                    ></option>
+                ))}
+            </Input>
         );
         return timeTableList;
     }
 
+    const giveMeDataWorker = (id)=>{
+        let data = workerData;
+        if(!data[id] ){
+            return;
+        }
+        let name =data[id].worker.name;
+        let surname= data[id].worker.surname;
+        
+        return `${name} ${surname}`;
+    }
 
+
+    const giveMeDataTimetable = (id)=>{
+        let data = timeTableData;
+        if(!data[id]) {
+            return;
+        }
+        let title = data[id].title;
+        let  inicio= data[id].startTime;
+        let fin = data[id].endTime;
+    
+        return `${title} (${inicio}-${fin})`
+    }
     const clearFormHandler = (event) => {
         event.preventDefault();
         setWorkShiftFormData(initialWorkShiftFormData);
     }
 
-    const saveForm = (event) => {
-        //TODO
+    const erasehandler=(event,workshift)=>{
+        console.log(workshift);
+        event.preventDefault();
+        console.log('borrar');
+        // execiting delete method
+        axios.delete('https://haikenda-6a939.firebaseio.com/workshift/'+workshift+'.json').then(
+            response =>{
+                // reloading new data
+              loadDBDataInState();
+              setworkShiftData(setworkShiftData);
+            }
+        );
+    };
+
+    /* to check */
+    const fillFormToEdit = (id, data) => {
+        const newForm = {...workShiftFormData};
+        newForm.id = {...newForm.id};
+        newForm.id.value = id;
+        newForm.id.inputConfig = {...newForm.id.inputConfig, hidden: false};
+        for (const fieldName in data) {
+            let value = data[fieldName]
+            newForm[fieldName] = {
+                ...newForm[fieldName],
+                value,
+                isValid: true
+            }
+        }
+        setWorkShiftFormData({...workShiftFormData});
+    }
+
+ 
+
+
+    const startEditionHandler =(event, workshift)=>{
+        event.preventDefault();
+        axios.get('https://haikenda-6a939.firebaseio.com/workshift/'+workshift+'.json').then(response => {
+            if (isMounted.current == true) {
+                console.log(response.data);
+                fillFormToEdit(workshift, response.data);
+            }
+        })
     }
 
 
-    const formElementsArray = [];
-    console.log(workShiftFormData)
-    for (let k in workShiftFormData) {
-        let item = workShiftFormData[k]
-        formElementsArray.push({
-            id: k,
-            config: item
-        });
+
+
+
+    const createTable = () => {
+        const formElementsArray = [];
+        for (let k in workShitData) {
+            let item = workShitData[k];
+            formElementsArray.push({
+                id: k,
+                config: item,
+            });
+        }
+            let table = (
+                <div>
+                    {formElementsArray.map(element => (
+                        
+                        // Creation  TimeTable element and populating
+                        <WorkShiftContainer 
+                            key={element.id} 
+                            workshift={giveMeDataTimetable(element.config.timetable)} 
+                            worker={giveMeDataWorker(element.config.worker)} 
+                            endTime={element.config.endTime} 
+                            startTime={element.config.startTime}
+                            onClick={(event)=>erasehandler(event,element.id)}
+                            toupdate={(event)=>startEditionHandler(event,element.id)}
+                        />
+                    ))}
+                </div>
+            );
+            return table;
     }
 
-    return (
-        <Border>
-            <h1>Gestión del turno</h1>
-            <form id="form">
-                
-                {formElementsArray.map((formElement) => (
-                    //Populating input component, create once for each form element
-                    formElement.id==='worker' ? fillworkerSelect()
-                    : formElement.id === 'timetable' ? fillTimeTableSelect()
-                    : <Input
-                        key={formElement.id}
-                        elementType={formElement.config.elementType}
-                        inputConfig={formElement.config.inputConfig}
-                        value={formElement.config.value}
-                        incorrectValues={!formElement.config.isValid}
-                        changed={(evt) => inputChangeHandler(evt, formElement.id)}
-                        label={formElement.config.label}
-                    />
-                ))}
+        
+        const formElementsArray = [];
+        for (let k in workShiftFormData) {
+            let item = workShiftFormData[k]
+            formElementsArray.push({
+                id: k,
+                config: item
+            });
+        }
+        return (
+            <Border>
+                <h1>Gestión del turno</h1>
+                <form id="form">
 
-                <Button btntype="Save" clicked={createWorkshift}>Guardar</Button>                
-                <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
+                    {formElementsArray.map((formElement) => (
+                        //Populating input component, create once for each form element
+                        formElement.id === 'worker' ? fillworkerSelect()
+                            : formElement.id === 'timetable' ? fillTimeTableSelect()
+                                : <Input
+                                    key={formElement.id}
+                                    elementType={formElement.config.elementType}
+                                    inputConfig={formElement.config.inputConfig}
+                                    value={formElement.config.value}
+                                    incorrectValues={!formElement.config.isValid}
+                                    changed={(evt) => inputChangeHandler(evt, formElement.id)}
+                                    label={formElement.config.label}
+                                />
+                    ))}
+          
 
-            </form>
-        </Border>
-    )
-}
+                    <Button btntype="Save" clicked={createWorkshift}>Guardar</Button>
+                    <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
+                    
+                </form>
+                {createTable()}
+            </Border>
+        )
+    }
 
-export default WorkShift;
+    export default WorkShift;
