@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Input from '../../components/UI/Input/Input';
 import Button from '../../components/UI/Button/Button';
 import Border from '../../components/hoc/Border';
-import axios from '../../axios.app';
 import TimeTableContainer from '../../components/TimeTableContainer/TimeTableContainer';
-
+import provider from '../../providers/TimetableProvider';
 
 // initial state of form
 const initialTimeTableForm = {
@@ -111,7 +110,7 @@ function TimeTableForm() {
 
     //Variable to fecthing values from DDBB
     const loadDBDataInState = ()=>{
-        axios.get('https://haikenda-6a939.firebaseio.com/timetable.json').then(response => {
+        provider.fetchTimetables().then(response => {
             if (isMounted.current == true) {
                 setData(response.data);
             }
@@ -163,7 +162,7 @@ function TimeTableForm() {
         }
         delete timeTableData.id;
         //saving data
-        axios.post('/timetable.json', timeTableData)
+        provider.createTimetable(timeTableData)
             .then(() =>{
                 //Clear form
                 setTimeTableFormState(initialTimeTableForm);
@@ -181,7 +180,7 @@ function TimeTableForm() {
         event.preventDefault();
         console.log('borrar');
         // execiting delete method
-        axios.delete('https://haikenda-6a939.firebaseio.com/timetable/'+idTimetable+'.json').then(
+        provider.deleteTimetable(idTimetable).then(
             response =>{
                 // reloading new data
               loadDBDataInState();
@@ -193,7 +192,7 @@ function TimeTableForm() {
 
     const startEditionHandler =(event, timetableId)=>{
         event.preventDefault();
-        axios.get('https://haikenda-6a939.firebaseio.com/timetable/'+timetableId+'.json').then(response => {
+        provider.fetchOneTimetable(timetableId).then(response => {
             if (isMounted.current == true) {
                 console.log(response.data);
                 fillFormToEdit(timetableId, response.data);
@@ -210,7 +209,7 @@ function TimeTableForm() {
         }
         delete timeTableData.id; //we don't want to send the id as a param, it will be only in the URL
         //saving data
-        axios.put('/timetable/'+timetableId+'.json', timeTableData)
+        provider.updateTimetable(timetableId, timeTableData)
             .then(() =>{
                 //Clear form
                 setTimeTableFormState(initialTimeTableForm);
