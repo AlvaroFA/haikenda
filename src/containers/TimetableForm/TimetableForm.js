@@ -214,10 +214,11 @@ function TimeTableForm() {
     @param idTimetable determine which timeline would be deleted
     */
     const erasehandler=(event,idTimetable)=>{
-        console.log(idTimetable);
         event.preventDefault();
-        console.log('borrar');
-        // execiting delete method
+        if(!confirm("Borrar horario?")){
+            return;
+        }
+        // executing delete method
         startOperation(OPERATIONS.DELETE);
         provider.deleteTimetable(idTimetable)
         .then(response =>{
