@@ -7,22 +7,19 @@ import '../../../node_modules/@fullcalendar/core/main.css';
 import '../../../node_modules/@fullcalendar/resource-timeline/main.css';
 import '../../../node_modules/@fullcalendar/timeline/main.css';
 import './TimeTableFullCalendar.css'
+import WorkShift from '../WorkShift/WorkShift';
 
-const initialEventValues={
-    resourceId: '',
-    id: '',
-    title: '',
-    start: '',
-    end: ''
-}
+const initialEventValues = {};
+const initialWorkShiftData = undefined;
+const initialTimeTableData = undefined;
 
 const TimeTableFullCalendar = () => {
   const isMounted = useRef(true);
   const [workerData, setWorkerData] = useState({});
-  const [timeTableData, setTimeTableData] = useState({});
+  const [timeTableData, setTimeTableData] = useState(initialTimeTableData);
   const [workShiftData, setWorkShiftData] = useState(initialWorkShiftData);
-  const [eventData,setEventData] = useState(initialEventValues);
-  const initialWorkShiftData={};
+  const [eventData, setEventData] = useState(initialEventValues);
+
   const loadDBDataInState = () => {
     axios.get('https://haikenda-6a939.firebaseio.com/workers.json').then(response => {
       if (isMounted.current == true) {
@@ -53,6 +50,21 @@ const TimeTableFullCalendar = () => {
   }, []);
 
 
+  useEffect(() => {
+    loadDBDataInState();
+    return (() => {
+      isMounted.current = false;
+    });
+  }, []);
+
+
+
+
+
+
+
+
+
   const getDataWorker = () => {
     const workerArray = [];
     for (let k in workerData) {
@@ -75,103 +87,110 @@ const TimeTableFullCalendar = () => {
 -LvCSadkljDMgB08IT9d: {endTime: "", startTime: "", timetable: "", worker: ""}
 -LvCScxj7f6fkCJ1I4sM: {endTime: "", startTime: "", timetable: "-Lv0o9DxcM_4hJb4kQAn", worker: "-LvC1rHaeEKDJ1tMrpzU"}
     */
-   let workerId={};
-   let data = workShiftData;
-    for( let idWorkshift in data){
-        workerId=idWorkshift;
+    let workerId = [];
+    let data = workShiftData;
+    for (let a in data) {
+      workerId.push(data[a].worker);
     }
-  return workerId; 
-};
+    return workerId;
+  };
 
-const getTimeTableDataHandler = () => {
-  const timeTableDataArray = [];
-  for (let k in timeTableData) {
-    let item = timeTableData[k]
-    timeTableDataArray.push({
-      endTime: item.endTime,
-      startTime: item.startTime,
-      title: item.title
-    });
-  }
-  return timeTableDataArray;
-};
+  const getWorkShiftDataHandler2 = () => {
+    /*model*/
+    /*
+  {-LvCSadkljDMgB08IT9d: {…}, -LvCScxj7f6fkCJ1I4sM: {…}}
+  -LvCSadkljDMgB08IT9d: {endTime: "", startTime: "", timetable: "", worker: ""}
+  -LvCScxj7f6fkCJ1I4sM: {endTime: "", startTime: "", timetable: "-Lv0o9DxcM_4hJb4kQAn", worker: "-LvC1rHaeEKDJ1tMrpzU"}
+    */
+    let workerId = [];
+    let data = workShiftData;
+    for (let a in data) {
+      workerId.push(data[a].timetable);
+    }
+    return workerId;
+  };
 
-const eventBuilder = () => {
-  const eventData=[];
-  const workShiftData= getWorkShiftDataHandler();
-  const timeTableData = getTimeTableDataHandler();
-  for (let k in eventData) {
-    let items = eventData[k];
- 
-    for (let v in items) {
-
-
-      eventData.push({
-        resourceId: "",
-        id: workShiftData,
+  const GiveMeOneEvent = () => {
+    let t=eventData;
+    let table = timeTableData;
+    for (let time in timeTableData)
+     {
+      let evento = {
+        resourceId: '',
+        id: '',
         title: '',
         start: '',
         end: ''
-      });
-      console.log(eventData);
+      };
+      evento['title'] = table[time].title;
+      evento['start'] = table[time].startTime;
+      evento['end'] = table[time].endTime;
+      evento['id'] = time;
+      t.push(evento)
     }
   }
-  return eventData;
-}
+
+
+  const giveMeEvents=()=>{
+    if(!timeTableData || !workShiftData){
+      return [];
+    }
+
+    const arrayEventos=[];
+    for (const idWorkShift in workShiftData){
+      const workshift = workShiftData[idWorkShift];
+      let idTimetable = workshift.timetable;
+      let timetable = timeTableData[idTimetable];
+      let title = timetable.title;
+      let idworker = workshift.worker;
+      let start = workshift.startTime;
+      let end = workshift.endTime;
+    
+      arrayEventos.push({
+        resourceId: idworker,
+        id: idWorkShift,
+        title,
+        start,
+        end,
+      })
+    }
+    return arrayEventos;
+  }
 
 
 
-
-
-return (
-  <div className="TimeTableFullCalendar">
-    <FullCalendar
-      defaultView="resourceTimeline"
-      plugins={[resourceTimelinePlugin]}
-      header={{
-        left: 'prev,next ,today',
-        center: 'title',
-        // TO DO MODIFY BUTTON CALENDAR
-        right: 'resourceTimelineMonth, resourceTimelineDay, resourceTimeline'
-      }}
-      locale='es'
-      firstDay={1}
-      nowIndicator={true}
-      schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
-      resources=
-      {getDataWorker()}
-
+  return (
+    <div className="TimeTableFullCalendar">
+      <FullCalendar
+        defaultView="resourceTimeline"
+        plugins={[resourceTimelinePlugin]}
+        header={{
+          left: 'prev,next ,today',
+          center: 'title',
+          // TO DO MODIFY BUTTON CALENDAR
+          right: 'resourceTimelineMonth, resourceTimelineDay, resourceTimeline'
+        }}
+        locale='es'
+        firstDay={1}
+        nowIndicator={true}
+        schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
+        resources=
+        {getDataWorker()}
+        events={
+          giveMeEvents()}
       /*{[
         {
-          id: 'a',
-          title: 'Room A'
-        },{
-          id:'2',
-          title: 'trabajador 2'
- 
+          resourceId: '65sfCQ8su3acXRyK24PDPWiv16u1',
+          id: '1',
+          title: 'turno3',
+          start: '2019-12-01 ',
+          end: '2019-12-02',
         }
-      ]}
-      */
-      events={eventBuilder()}
-
-
-
-
-
-    /*{[
-      {
-        resourceId: '65sfCQ8su3acXRyK24PDPWiv16u1',
-        id: '1',
-        title: 'turno3',
-        start: '2019-12-01 ',
-        end: '2019-12-02',
-
+      ]
       }
-    ]
-    }
-    */
-    />
-  </div>
-);
+      */
+      />
+    </div>
+  );
 };
 export default TimeTableFullCalendar;

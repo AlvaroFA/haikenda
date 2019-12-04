@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Layout from './components/Layout/Layout';
 import SignIn from './containers/SignIn'
-import SignUp from './containers/SignUp/SignUpNew';
+import SignUp from './containers/SignUp/SignUp';
 import Workshift from './containers/WorkShift/WorkShift';
 import  TimeTableform from './containers/TimetableForm/TimetableForm';
 import {Route, Switch} from 'react-router-dom';

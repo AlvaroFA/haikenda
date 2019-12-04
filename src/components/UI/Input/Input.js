@@ -1,5 +1,6 @@
 import React from 'react';
 import './Input.css';
+
 // Pendiente de importar las clases del css 
 // Custom component for input used 
 const Input = (props)=>{
@@ -30,9 +31,7 @@ const Input = (props)=>{
         <div>
         {label}
         {inputElement}
-        {
-            errors.map((item, key) => <span key={key} className="validation-error">{item}</span>)
-        }
+
         </div>
     );
 };
