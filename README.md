@@ -1,4 +1,4 @@
-#HELLO THERE !!!!
+# HELLO THERE !!!!
 
 # HaiKenda- Aplicación Web para Xestión de quendas de traballo
 
@@ -11,11 +11,11 @@ Proxecto Final de Ciclo Superior de FP Desenvolvemento de Aplicións Web, feito 
   Axios, FullCalendar, Moment, create react application, Firebase CLI, Firebase UI, FireBase DB
  - NPM, NODE
   
-##Primeiros pasos
+## Primeiros pasos
 
 
 
-##Requisitos 
+## Requisitos 
 | Libraria | Versión |
 | ------------- | ------------- |
 | Node  | PENDIENTE DE COMPROBACION DE VERSIÓN  |
