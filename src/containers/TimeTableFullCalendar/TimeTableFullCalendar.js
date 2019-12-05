@@ -80,57 +80,6 @@ const TimeTableFullCalendar = () => {
     return workerArray;
   };
 
-  const getWorkShiftDataHandler = () => {
-    /*model*/
-    /*
-{-LvCSadkljDMgB08IT9d: {…}, -LvCScxj7f6fkCJ1I4sM: {…}}
--LvCSadkljDMgB08IT9d: {endTime: "", startTime: "", timetable: "", worker: ""}
--LvCScxj7f6fkCJ1I4sM: {endTime: "", startTime: "", timetable: "-Lv0o9DxcM_4hJb4kQAn", worker: "-LvC1rHaeEKDJ1tMrpzU"}
-    */
-    let workerId = [];
-    let data = workShiftData;
-    for (let a in data) {
-      workerId.push(data[a].worker);
-    }
-    return workerId;
-  };
-
-  const getWorkShiftDataHandler2 = () => {
-    /*model*/
-    /*
-  {-LvCSadkljDMgB08IT9d: {…}, -LvCScxj7f6fkCJ1I4sM: {…}}
-  -LvCSadkljDMgB08IT9d: {endTime: "", startTime: "", timetable: "", worker: ""}
-  -LvCScxj7f6fkCJ1I4sM: {endTime: "", startTime: "", timetable: "-Lv0o9DxcM_4hJb4kQAn", worker: "-LvC1rHaeEKDJ1tMrpzU"}
-    */
-    let workerId = [];
-    let data = workShiftData;
-    for (let a in data) {
-      workerId.push(data[a].timetable);
-    }
-    return workerId;
-  };
-
-  const GiveMeOneEvent = () => {
-    let t=eventData;
-    let table = timeTableData;
-    for (let time in timeTableData)
-     {
-      let evento = {
-        resourceId: '',
-        id: '',
-        title: '',
-        start: '',
-        end: ''
-      };
-      evento['title'] = table[time].title;
-      evento['start'] = table[time].startTime;
-      evento['end'] = table[time].endTime;
-      evento['id'] = time;
-      t.push(evento)
-    }
-  }
-
-
   const giveMeEvents=()=>{
     if(!timeTableData || !workShiftData){
       return [];
