@@ -1,19 +1,22 @@
-# Working Hours Timeble Manager
+#HELLO THERE !!!!
 
-Open source project for final work to FP web Developer
+# HaiKenda- Aplicación Web para Xestión de quendas de traballo
+
+Proxecto Final de Ciclo Superior de FP Desenvolvemento de Aplicións Web, feito con React
 
 
-## Objetive
+## Librerias utilizadas
 
-Help to people who works in a team check when and how time must work.
+- Librarias:
+  Axios, FullCalendar, Moment, create react application, Firebase CLI, Firebase UI, FireBase DB
+ - NPM, NODE
+  
+##Primeiros pasos
 
-## Roles
-- ADMIN: 
---This user can add/remove/edit user in the app
---Create/Modify/Delete working hours and assign to a worker
 
-## Contents
 
-- Libraries used:
-  Axios, FullCalendar, Moment
-
+##Requisitos 
+| Libraria | Versión |
+| ------------- | ------------- |
+| Node  | PENDIENTE DE COMPROBACION DE VERSIÓN  |
+| NPM  |pdte de comprobación  |
