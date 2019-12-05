@@ -3,42 +3,59 @@ import Layout from './components/Layout/Layout';
 import SignIn from './containers/SignIn'
 import SignUp from './containers/SignUp/SignUp';
 import Workshift from './containers/WorkShift/WorkShift';
-import  TimeTableform from './containers/TimetableForm/TimetableForm';
+import TimeTableform from './containers/TimetableForm/TimetableForm';
 import {Route, Switch} from 'react-router-dom';
 import TimeTableFullCalendar from './containers/TimeTableFullCalendar/TimeTableFullCalendar';
+import {fetchOneWorker} from './providers/WorkersProvider'
 
-import * as firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/database';
-import firebaseConfig from './components/firebase/config';
+import firebaseApp from './components/firebase/Firebase'; 
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-firebaseApp.auth().languageCode = 'es';
+import firebase from 'firebase/app';
 
 class App extends Component {
 
   state = {
-    user: firebaseApp.auth().currentUser,
+    user: undefined,
     sessionInfoRetrieved:false
   };
 
   componentDidMount() {
-    this.unregisterAuthObserver = firebaseApp.auth().onAuthStateChanged((user) => {
-      //TODO: recuperar los datos de la BD, para completar el nombre y si es admin o no
-      this.setState({
-        user,
-        sessionInfoRetrieved: true
-      });
+    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged((user) => {
+      this.setUser(user);
     });
+  }
+
+  setUser(user){
+    if( user && !user.isAnonymous) {
+      fetchOneWorker(user.uid)
+        .then((worker)=>{
+            this.setState({
+              user: {
+                ...worker,
+                uid: user.uid,
+                isAnonymous: user.isAnonymous
+              },
+              sessionInfoRetrieved: true
+            });
+        });
+    } else {
+      this.setState({sessionInfoRetrieved: true});
+    }
+  }
+
+  isUserLogged(){
+    if(!this.state.sessionInfoRetrieved) return false;
+    if(!this.state.user) return false;
+    if(this.state.user.isAnonymous) return false;
+    return true; 
+  }
+
+  isCompletelyRegistered(){
+    return this.state.user && this.state.user.email;
   }
 
   componentWillUnmount() {
     this.unregisterAuthObserver();
-  }
-
-  signout(){
-    console.log("SIGN OUT");
-    firebaseApp.auth().signOut();
   }
 
   render() {
@@ -47,14 +64,24 @@ class App extends Component {
       return <div> LOADING... </div>
     }
 
-    if(!this.state.user) {
-      return <SignIn firebase={firebaseApp}/>
-    }
+    if(!this.isUserLogged()) {
+      return (<Layout>
+        <SignIn />
+      </Layout>);
+    } 
+    
+    if(!this.isCompletelyRegistered()) {
+      return (<Layout>
+        <div>Cuenta no registrada</div>
+      </Layout>); 
+    } 
 
-    //TODO: MIRAR LO DE LOS PRIVATE ROUTES
     return (
       <div>
-        <Layout signout={() => this.signout()}>
+        <Layout 
+            isLoggedIn={this.isUserLogged()}
+            isAdmin={this.state.user && this.state.user.admin} 
+            user={this.state.user}>
           <Switch>
             <Route  path= "/" exact component={TimeTableFullCalendar} />
             <Route exact path="/signin" component={SignIn} />

@@ -6,12 +6,10 @@ import SideMenu from '../Navigation/SideMenu/SideMenu';
 
 //import Timetable from '../../containers/TimeTable';
 
-const layout = ({children, signout})=>(
+const layout = ({children, isLoggedIn, isAdmin, user})=>(
     <Border>
        <SideMenu/>
-        <MenuBar signout={signout}/>
-       
-
+        <MenuBar isLoggedIn={isLoggedIn} isAdmin={isAdmin} user={user}/>
         <main>
             {children}
         </main>

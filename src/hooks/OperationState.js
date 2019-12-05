@@ -21,11 +21,13 @@ export default function useOperationState(){
     const failOperation = (operation, error)=>{
         let reason = error || error.message;
         if(error.response && error.response.data && error.response.data.error) reason = error.response.data.error;
-        setOperationResult({
+        const op = {
             failed: true,
             operation: operation,
             reason
-        });
+        };
+        console.warn(op);
+        setOperationResult(op);
     }
 
     const isWaitingForOperation = ()=> {

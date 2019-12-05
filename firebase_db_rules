@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "timetable": {
+      ".read": "auth!=null && root.child('workers').child(auth.uid).exists()",
+      ".write": "auth!=null && root.child('workers').child(auth.uid).child('worker/admin').val()===true"
+    },
+    "workers": {
+      ".read": "auth!=null && root.child('workers').child(auth.uid).exists()",
+      ".write": "auth!=null && root.child('workers').child(auth.uid).child('worker/admin').val()===true"
+    },
+    "workshift": {
+      ".read": "auth!=null && root.child('workers').child(auth.uid).exists()",
+      ".write": "auth!=null && root.child('workers').child(auth.uid).child('worker/admin').val()===true"
+    }
+  }
+}

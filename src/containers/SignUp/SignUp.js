@@ -150,7 +150,6 @@ function SignUp() {
     }
 
     const clearForm = () => {
-        event.preventDefault();
         clearOperation();
         setWorkerForm(initialWorkerForm);
     }
@@ -176,7 +175,7 @@ function SignUp() {
         startOperation(OPERATIONS.CREATE);
 
         const newWorker = getValuesFromForm();
-        Workers.createWorker(newWorker)
+        Workers.createWorkerAndAccount(newWorker)
         .then(result => {
             successOperation(OPERATIONS.CREATE);
             clearForm();
