@@ -102,7 +102,7 @@ function TimeTableForm() {
     const [timeTableFormState, setTimeTableFormState] = useState(initialTimeTableForm);
     const [dataState, setData] = useState(data);
     const isMounted = useRef(true);
-    const {operation,
+    const { operation, 
         OPERATIONS,
         hasFailed,
         isWaitingForOperation,
@@ -114,12 +114,12 @@ function TimeTableForm() {
 
     //validation method
     const checkValidation = (value, rules) => {
-        if(!rules) return true;
+        if (!rules) return true;
 
         let validationErrors = [];
         if (rules.required) {
             const isEmpty = value.trim() === '';
-            if (isEmpty){
+            if (isEmpty) {
                 validationErrors.push("Campo obligatorio");
                 return validationErrors;
             }
@@ -129,7 +129,7 @@ function TimeTableForm() {
             let field = rules.afterThat;
             field = timeTableFormState.timeTableForm[field];
             const otherValue = field.value;
-            if(value > otherValue){
+            if (value > otherValue) {
                 validationErrors.push(`Tiene que ser posterior a '${field.label}'`);
             }
         }
@@ -138,14 +138,14 @@ function TimeTableForm() {
     }
 
     //Variable to fecthing values from DDBB
-    const loadDBDataInState = ()=>{
+    const loadDBDataInState = () => {
         startOperation(OPERATIONS.FETCH);
         provider.fetchTimetables().then(response => {
             if (isMounted.current == true) {
                 setData(response.data);
                 successOperation(OPERATIONS.FETCH);
             }
-        }).catch((error)=> {
+        }).catch((error) => {
             failOperation(OPERATIONS.FETCH, error);
         });
     }
@@ -158,9 +158,9 @@ function TimeTableForm() {
         });
     }, []);
 
-    
+
     /*verify when detect changes on input*/
-    const inputChangeHandler = (event, inputId) => { 
+    const inputChangeHandler = (event, inputId) => {
         event.preventDefault();       // cloning the data 
         const newTimeTableForm = {
             ...timeTableFormState.timeTableForm
@@ -198,7 +198,7 @@ function TimeTableForm() {
         //saving data
         startOperation(OPERATIONS.CREATE);
         provider.createTimetable(timeTableData)
-            .then(() =>{
+            .then(() => {
                 //Clear form
                 setTimeTableFormState(initialTimeTableForm);
                 //reloading data list
@@ -214,29 +214,29 @@ function TimeTableForm() {
     /*EraseMethod
     @param idTimetable determine which timeline would be deleted
     */
-    const erasehandler=(event,idTimetable)=>{
+    const erasehandler = (event, idTimetable) => {
         event.preventDefault();
-        if(!confirm("Borrar horario?")){
+        if (!confirm("Borrar horario?")) {
             return;
         }
         // executing delete method
         startOperation(OPERATIONS.DELETE);
         provider.deleteTimetable(idTimetable)
-        .then(response =>{
-            // reloading new data
-            loadDBDataInState();
-            if(editionId() === idTimetable) {
-                setTimeTableFormState(initialTimeTableForm);
-            }
-            successOperation(OPERATIONS.DELETE);
-        })
-        .catch(error => {
-            console.log(error);
-            failOperation(OPERATIONS.DELETE, error);
-        });
+            .then(response => {
+                // reloading new data
+                loadDBDataInState();
+                if (editionId() === idTimetable) {
+                    setTimeTableFormState(initialTimeTableForm);
+                }
+                successOperation(OPERATIONS.DELETE);
+            })
+            .catch(error => {
+                console.log(error);
+                failOperation(OPERATIONS.DELETE, error);
+            });
     };
 
-    const startEditionHandler =(event, timetableId)=>{
+    const startEditionHandler = (event, timetableId) => {
         event.preventDefault();
         startOperation(OPERATIONS.FETCH);
         provider.fetchOneTimetable(timetableId).then(response => {
@@ -262,7 +262,7 @@ function TimeTableForm() {
         //saving data
         startOperation(OPERATIONS.UPDATE);
         provider.updateTimetable(timetableId, timeTableData)
-            .then(() =>{
+            .then(() => {
                 //Clear form
                 setTimeTableFormState(initialTimeTableForm);
                 //reloading data list
@@ -276,10 +276,10 @@ function TimeTableForm() {
     };
 
     const fillFormToEdit = (id, data) => {
-        const newForm = {...timeTableFormState.timeTableForm};
-        newForm.id = {...newForm.id};
+        const newForm = { ...timeTableFormState.timeTableForm };
+        newForm.id = { ...newForm.id };
         newForm.id.value = id;
-        newForm.id.inputConfig = {...newForm.id.inputConfig, hidden: false};
+        newForm.id.inputConfig = { ...newForm.id.inputConfig, hidden: false };
         for (const fieldName in data) {
             let value = data[fieldName]
             newForm[fieldName] = {
@@ -288,7 +288,7 @@ function TimeTableForm() {
                 isValid: true
             }
         }
-        setTimeTableFormState({...timeTableFormState, timeTableForm: newForm});
+        setTimeTableFormState({ ...timeTableFormState, timeTableForm: newForm });
     }
 
     /*Array to populate forms elements*/
@@ -303,91 +303,99 @@ function TimeTableForm() {
     const timeTableElementsArray = [];
     for (let k in dataState) {
         timeTableElementsArray.push({
-            id:  k,
-            datos:dataState[k]
-        });
-
-
-    }
-
-    const editionId = ()=> timeTableFormState.timeTableForm.id.value;
-
-/*Creation form method */ 
-const createForm =()=>{
-    const formElementsArray = [];
-    console.log(timeTableFormState.timeTableForm)
-    for (let k in timeTableFormState.timeTableForm) {
-        let item = timeTableFormState.timeTableForm[k]
-        formElementsArray.push({
             id: k,
-            config: item
+            datos: dataState[k]
         });
+
+
     }
 
-const failedCreationOrEdition = hasFailed(OPERATIONS.CREATE) || hasFailed(OPERATIONS.UPDATE); 
+    const editionId = () => timeTableFormState.timeTableForm.id.value;
 
-let form = (
-    <fieldset disabled={isWaitingForOperation()}>
-        <form id='form'>
-            
-            {formElementsArray.map(formElement => ( 
-                //Populating input component, create once for each form element
-                <Input
-                    key={formElement.id}
-                    elementType={formElement.config.elementType}
-                    inputConfig={formElement.config.inputConfig}
-                    value={formElement.config.value}
-                    incorrectValues={failedCreationOrEdition || formElement.config.edited ? formElement.config.validationErrors : undefined}
-                    changed={(evt) => inputChangeHandler(evt, formElement.id)}
-                    label={formElement.config.label}
-                />
-            ))}
-            { editionId() //we consider that is and edition when we already have an ID 
-                ? <Button btntype="Edit" clicked={(event) => editTimeTableFormProceed(event, editionId())}>Editar horario</Button> 
-                : <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
-            }
-            <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
-        </form>
-    </fieldset>
-    );
-    return form;
-};
-    
+    /*Creation form method */
+    const createForm = () => {
+        const formElementsArray = [];
+        console.log(timeTableFormState.timeTableForm)
+        for (let k in timeTableFormState.timeTableForm) {
+            let item = timeTableFormState.timeTableForm[k]
+            formElementsArray.push({
+                id: k,
+                config: item
+            });
+        }
 
+        const failedCreationOrEdition = hasFailed(OPERATIONS.CREATE) || hasFailed(OPERATIONS.UPDATE);
 
-/*Creation Table method */
-const createTable= ()=>{
-    let table = (
-        <div>
-        {timeTableElementsArray.map(elemento=>(
-            // Creation  TimeTable element and populating
-            <TimeTableContainer 
-                key={elemento.id} 
-                title={elemento.datos.title} 
-                startTime={elemento.datos.startTime} 
-                endTime={elemento.datos.endTime} 
-                onClick={(event)=>erasehandler(event,elemento.id)}
-                toupdate={(event)=>startEditionHandler(event,elemento.id)}
-                disabled={isWaitingForOperation()}
-            />
-        ))}
-        </div>
-    );
+        let state;
+        if(operation.operation==='submit') {
+            if(operation.waiting) state = <p className="state waiting">Guardando...</p>
+            else if (operation.success) state = <p className="state success">Usuario guardado</p>
+            else if (operation.failed) state = <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
+        }
 
-    return table;
-};
+        let form = (
+            <fieldset disabled={isWaitingForOperation()}>
+                <form id='form'>
+
+                    {formElementsArray.map(formElement => (
+                        //Populating input component, create once for each form element
+                        <Input
+                            key={formElement.id}
+                            elementType={formElement.config.elementType}
+                            inputConfig={formElement.config.inputConfig}
+                            value={formElement.config.value}
+                            incorrectValues={failedCreationOrEdition || formElement.config.edited ? formElement.config.validationErrors : undefined}
+                            changed={(evt) => inputChangeHandler(evt, formElement.id)}
+                            label={formElement.config.label}
+                        />
+                    ))}
+                    {editionId() //we consider that is and edition when we already have an ID 
+                        ? <Button btntype="Edit" clicked={(event) => editTimeTableFormProceed(event, editionId())}>Editar horario</Button>
+                        : <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
+                    }
+                    <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
+                    {state}
+                </form>
+            </fieldset>
+        );
+        return form;
+    };
 
 
-return (
-    //Added HOC (High order Component) and adding method to display data 
-    <Border>
-        <div>
-            <h4>Gestión de Horario</h4>
-            {createForm()}
-            {createTable()}        
-        </div>
-    </Border>
-)
+
+    /*Creation Table method */
+    const createTable = () => {
+        let table = (
+            <div>
+                {timeTableElementsArray.map(elemento => (
+                    // Creation  TimeTable element and populating
+                    <TimeTableContainer
+                        key={elemento.id}
+                        title={elemento.datos.title}
+                        startTime={elemento.datos.startTime}
+                        endTime={elemento.datos.endTime}
+                        onClick={(event) => erasehandler(event, elemento.id)}
+                        toupdate={(event) => startEditionHandler(event, elemento.id)}
+                        disabled={isWaitingForOperation()}
+                    />
+                ))}
+            </div>
+        );
+
+        return table;
+    };
+
+
+    return (
+        //Added HOC (High order Component) and adding method to display data 
+        <Border>
+            <div>
+                <h4>Gestión de Horario</h4>
+                {createForm()}
+                {createTable()}
+            </div>
+        </Border>
+    )
 
 }
 export default TimeTableForm;

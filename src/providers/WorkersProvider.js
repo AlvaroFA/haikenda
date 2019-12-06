@@ -62,7 +62,12 @@ function saveWorkerData(uid, workerData){
  * @return {Promise<Any>}
  */
 export function updateWorker(uid, workerData) {
-    return saveWorkerData(uid, workerData)
+    const data = {
+        ...workerData
+    };
+    delete data.password;
+    delete data.email;
+    return firebaseApp.database().ref('/workers/'+uid+'/worker').update(data);
 }
 
 /**

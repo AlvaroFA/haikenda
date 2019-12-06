@@ -1,4 +1,4 @@
-import {userRegisterApp} from '../components/firebase/Firebase';
+import firebaseApp, {userRegisterApp} from '../components/firebase/Firebase';
 
 
 
@@ -18,6 +18,12 @@ export function registerUserAccount(email, password) {
             }
             throw {code, message: userMessage};
         });
+}
+
+export function sendPasswordResetEmail(email) {
+    return firebaseApp.auth().sendPasswordResetEmail(email)
+        .then(()=> alert("Enviado email de recuperación de contraseña a "+email))
+        .catch((err) => alert("Error email de recuperación de contraseña a "+email+". "+err));
 }
 
 function generateUserErrorMessage(firebaseCode) {

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './SignUp.css';
 import Input from '../../components/UI/Input/Input';
 import Border from '../../components/hoc/Border';
 import Workers from '../../providers/WorkersProvider';
 import useOperationState from '../../hooks/OperationState';
+import WorkerContainer from '../../components/WorkerContainer/WorkerContainer';
+import provider from '../../providers/WorkersProvider';
+import Button from '../../components/UI/Button/Button';
 
 /**
  * Checks that a string is a strong password:
@@ -21,6 +24,17 @@ const strongPasswordRegExp = (() => {
 const emailFormat = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
 
 const initialWorkerForm = {
+    id: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'text',
+            name: 'id',
+            disabled: true,
+            hidden: true,
+        },
+        value: '',
+        label: 'ID',
+    },
     name: {
         elementType: 'input',
         inputConfig: {
@@ -57,7 +71,8 @@ const initialWorkerForm = {
         elementType: 'input',
         inputConfig: {
             type: 'email',
-            placeholder: 'Correo del trabajador'
+            placeholder: 'Correo del trabajador',
+            disabled: false
         },
         value: '',
         label:'Email',
@@ -73,16 +88,12 @@ const initialWorkerForm = {
         elementType: 'input',
         inputConfig: {
             type: 'text',
-            placeholder: 'Puesto del trabajador'
+            placeholder: 'e.j. Coordinadora'
         },
         value: '',
-        label:'Puesto',
-        validation: {
-            required: true
-        },
+        label:'Descripción',
         edited: false,
-        isValid: false,
-        validationErrors: ["Campo obligatorio"]
+        isValid: true,
     },
     password: {
         elementType: 'input',
@@ -99,12 +110,27 @@ const initialWorkerForm = {
         edited: false,
         isValid: false,
         validationErrors: ["Campo obligatorio"]
-    }
+    },
+    admin: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'checkbox',
+            placeholder: 'Administrador'
+        },
+        value: false,
+        label:'Administrador',
+        edited: false,
+        isValid: true,
+    },
 }
 
+// initial values for useState
+const initialWorkersData = {};
 
-function SignUp() {
+function SignUp({user}) {
     const [workerForm, setWorkerForm] = useState(initialWorkerForm);
+    const [dataState, setDataState] = useState(initialWorkersData);
+    const isMounted = useRef(true);
     const {operation,
         OPERATIONS,
         hasFailed,
@@ -122,6 +148,8 @@ function SignUp() {
      */ 
     const checkValidation = (value, rules) => {
         let validationErrors = [];
+        if(!rules) return validationErrors;
+
         if(rules.required){
             const isEmpty = value.trim() === '';
             if (isEmpty){
@@ -144,12 +172,17 @@ function SignUp() {
 
     const isValid = () => {
         for(const field in workerForm) {
-            if(workerForm[field].validationErrors.length>0) return false;
+
+            if(workerForm[field].validationErrors && 
+                workerForm[field].validationErrors.length>0) {
+                    return false;
+            }
         }
         return true;
     }
 
-    const clearForm = () => {
+    const clearForm = (event) => {
+        if(event) event.preventDefault();
         clearOperation();
         setWorkerForm(initialWorkerForm);
     }
@@ -161,6 +194,27 @@ function SignUp() {
         }
         return formWorkerData;
     }
+
+    //Variable to fecthing values from DDBB
+    const loadDBDataInState = () => {
+        startOperation(OPERATIONS.FETCH);
+        provider.fetchWorkers().then(response => {
+            if (isMounted.current === true) {
+                setDataState(response);
+                successOperation(OPERATIONS.FETCH);
+            }
+        }).catch((error) => {
+            failOperation(OPERATIONS.FETCH, error);
+        });
+    }
+
+    //Using isMounted to avoid race condition 
+    useEffect(() => {
+        loadDBDataInState();
+        return (() => {
+            isMounted.current = false;
+        });
+    }, []);
 
     // submit form method
     const signUpProceed = (event) => {
@@ -204,47 +258,186 @@ function SignUp() {
         setWorkerForm(updatedWorkerForm)
     }
 
-    /** antiguo render */
-    const formElementsArray = [];
-    for (let k in workerForm) {
-        formElementsArray.push({
-            id: k,
-            config: workerForm[k]
+    const editionId = () => workerForm.id.value;
+    const sameUidAsLogged = (uid)=>{
+        if(!user || !user.uid)
+            return false; //no debería ocurrir
+        return user.uid === uid;
+    }
+
+    /**
+     * @param event 
+     * @param uid determine which worker will be deleted
+     */
+   const erasehandler = (event, uid) => {
+        event.preventDefault();
+        if (!confirm("Borrar usuario?")) {
+            return;
+        }
+        // executing delete method
+        startOperation(OPERATIONS.DELETE);
+        provider.deleteWorker(uid)
+            .then(response => {
+                // reloading new data
+                loadDBDataInState();
+                if (editionId() === uid) {
+                    setWorkerForm(initialWorkerForm);
+                }
+                successOperation(OPERATIONS.DELETE);
+            })
+            .catch(error => {
+                console.log(error);
+                failOperation(OPERATIONS.DELETE, error);
+            });
+    };
+
+    const editWorkerFormProceed = (event, uid) => {
+        event.preventDefault();
+        //coger los datos del form
+        const workerData = {};
+        for (let workerProp in workerForm) {
+            workerData[workerProp] = workerForm[workerProp].value;
+        }
+        delete workerData.id; //we don't want to send the id as a param, it will be only in the URL
+        //saving data
+        delete workerData.email; //we don't want to send the email, because we won't be able to update it anyway
+        startOperation(OPERATIONS.UPDATE);
+        provider.updateWorker(uid, workerData)
+            .then(() => {
+                //Clear form
+                setWorkerForm(initialWorkerForm);
+                //reloading data list
+                loadDBDataInState();
+                successOperation(OPERATIONS.UPDATE);
+            })
+            .catch(error => {
+                console.log(error);
+                failOperation(OPERATIONS.UPDATE);
+            });
+    };
+
+    
+    const fillFormToEdit = (id, data) => {
+        const newForm = { ...workerForm };
+        newForm.id = { ...newForm.id };
+        newForm.id.value = id;
+        newForm.id.inputConfig = { ...newForm.id.inputConfig, hidden: false };
+        //Email won't be updatable, so don't show it editable
+        newForm.email = { ...newForm.email};
+        newForm.email.inputConfig = { ...newForm.email.inputConfig, disabled:true}
+        //We don't allow to edit the password
+        delete newForm.password;
+        for (const fieldName in data) {
+            let value = data[fieldName]
+            newForm[fieldName] = {
+                ...newForm[fieldName],
+                value,
+                isValid: true
+            }
+        }
+        setWorkerForm(newForm);
+    }
+
+    const startEditionHandler = (event, uid) => {
+        event.preventDefault();
+        startOperation(OPERATIONS.FETCH);
+        provider.fetchOneWorker(uid).then(data => {
+            if (isMounted.current === true) {
+                fillFormToEdit(uid, data);
+                successOperation(OPERATIONS.FETCH);
+            }
+        }).catch(error => {
+            console.log(error);
+            failOperation(OPERATIONS.FETCH, error);
         });
     }
-    let state;
-    if(operation.operation==='submit') {
-        if(operation.waiting) state = <p className="state waiting">Guardando...</p>
-        else if (operation.success) state = <p className="state success">Usuario guardado</p>
-        else if (operation.failed) state = <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
+
+
+    const createForm = ()=>{
+        const formElementsArray = [];
+        for (let k in workerForm) {
+            formElementsArray.push({
+                id: k,
+                config: workerForm[k]
+            });
+        }
+
+        const failedCreationOrEdition = hasFailed(OPERATIONS.CREATE) || hasFailed(OPERATIONS.UPDATE);
+
+        let state;
+        if(operation.operation==='submit') {
+            if(operation.waiting) state = <p className="state waiting">Guardando...</p>
+            else if (operation.success) state = <p className="state success">Usuario guardado</p>
+            else if (operation.failed) state = <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
+        }
+    
+        const form = (
+            <form>
+                <fieldset disabled={isWaitingForOperation()}>
+                    {formElementsArray.map(formElement => (
+    
+                        <Input
+                            key={formElement.id}
+                            elementType={formElement.config.elementType}
+                            inputConfig={formElement.config.inputConfig}
+                            value={formElement.config.value}
+                            incorrectValues={failedCreationOrEdition || formElement.config.edited ? formElement.config.validationErrors : undefined}
+                            changed={(evt) => inputChangeHandler(evt, formElement.id)}
+                            label={formElement.config.label}
+                        />
+                    ))}
+                    {editionId() //we consider that is and edition when we already have an ID 
+                        ? <Button btntype="Edit" clicked={(event) => editWorkerFormProceed(event, editionId())}>Guardar usuario</Button>
+                        : <Button btntype="Create" clicked={signUpProceed}>Crear usuario</Button>
+                    }
+                    <Button className="Clear" clicked={clearForm}>Limpiar</Button>            
+                    {state}    
+                </fieldset>
+            </form>
+        );
+        return form;
     }
 
-    const form = (
-        <form>
-            <fieldset disabled={isWaitingForOperation()}>
-                {formElementsArray.map(formElement => (
+    /*Creation Table method */
+    const createTable= ()=>{
+        /*Array to populate worker elements*/
+        const workersArray = [];
+        for (let k in dataState) {
+            workersArray.push({
+                id: k,
+                datos: dataState[k]
+            });
+        }
 
-                    <Input
-                        key={formElement.id}
-                        elementType={formElement.config.elementType}
-                        inputConfig={formElement.config.inputConfig}
-                        value={formElement.config.value}
-                        incorrectValues={hasFailed(OPERATIONS.CREATE) || formElement.config.edited ? formElement.config.validationErrors : undefined}
-                        changed={(evt) => inputChangeHandler(evt, formElement.id)}
-                        label={formElement.config.label}
-                    />
-                ))}
-                <button className="Save" onClick={signUpProceed} >Alta de usuario</button>
-                <button className="Clear" onClick={clearForm}>Limpiar</button>            
-                {state}    
-            </fieldset>
-        </form>
-    );
+        let table = (
+            <div>
+            {workersArray.map(elemento=>(
+                // Creation  Worker element and populating
+                <WorkerContainer
+                    key={elemento.id} 
+                    name={elemento.datos.worker.name} 
+                    surname={elemento.datos.worker.surname} 
+                    email={elemento.datos.worker.email} 
+                    admin={elemento.datos.worker.admin}
+                    job={elemento.datos.worker.job}
+                    onDelete={ sameUidAsLogged(elemento.id) 
+                        ? undefined 
+                        : ((event)=>erasehandler(event,elemento.id))}
+                    onUpdate={(event)=>startEditionHandler(event,elemento.id)}
+                    disabled={isWaitingForOperation()}
+                />
+            ))}
+            </div>
+        );
+
+        return table;
+    };
     return (
         <Border>
             <div>
                 <h4>Alta de usuario</h4>
-                {form}
+                {createForm()}
+                {createTable()}
             </div>
         </Border>
     )
