@@ -1,0 +1,10 @@
+{
+    "workers": {
+        "FILL_HERE_YOUR_USER_UID" : {
+            "worker": {
+                email: "FILL_HERE_YOUR_EMAIL",
+                admin: true
+            }
+        }
+    }
+}
