@@ -16,12 +16,12 @@ function getDisplayName(user){
 
 const menubar = ({isLoggedIn, isAdmin, user})=>(
     <header className="MenuBar">
-        Menu principal
-        <nav>
-            <span>User {getDisplayName(user)}</span>
-            <NavigationItems user={user} isLoggedIn={isLoggedIn} isAdmin={isAdmin}/>
-        </nav>
+        <div className="MenuBarLogo">
+            Haikenda
+        </div>
+
+        <span>{getDisplayName(user)}</span>
     </header>
 );
 
-export default menubar;  
+export default menubar;

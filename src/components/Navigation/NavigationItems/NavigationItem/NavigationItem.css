@@ -1,3 +1,33 @@
 .NavigationItem {
-background-color: thistle;
+  width: 100%;
+}
+
+.NavigationItemLink {
+  display: inline-block;
+  width: 100%;
+  /* padding: ; */
+  border-radius: 4px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.NavigationItemLink, .NavigationItemLink:visited {
+  color: #895061;
+}
+
+.NavigationItemLinkActive {
+  color: #78244C;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.NavigationItemLink:hover,
+.NavigationItemLink:focus,
+.NavigationItemLink:active {
+  color: #78244C;
+  text-decoration: underline;
+}
+
+.NavigationItem:not(:last-child) {
+  margin-bottom: 16px;
 }

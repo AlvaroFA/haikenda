@@ -1,18 +1,19 @@
 import React from 'react';
-import classes from '../Button/Button.css'
+import '../Button/Button.css'
 
-//custom  button 
-const Button = (props)=>(
-    <button 
-        className={[classes.Button,classes[props.btnType]].join(' ')}
-        disabled={props.disabled}
-        onClick={props.clicked}>
-        {props.children}
+const Button = (props)=>{
+  const classes = `Button Button${props.btnType}`;
+
+  return (
+    <button className={classes} disabled={props.disabled} onClick={props.clicked}>
+      {props.children}
     </button>
-);
+  );
+};
 
 Button.defaultProps= {
-    disabled: false
+    disabled: false,
+    btnType: 'Normal',
 };
 
 

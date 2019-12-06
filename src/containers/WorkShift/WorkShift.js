@@ -113,7 +113,7 @@ const WorkShift = () => {
         });
 
     }
-    //Using isMounted to avoid race condition 
+    //Using isMounted to avoid race condition
     useEffect(() => {
         loadDBDataInState();
         return (() => {
@@ -162,7 +162,7 @@ const WorkShift = () => {
     }
 
     const inputChangeHandler = (event, inputId) => {
-        event.preventDefault();       // cloning the data 
+        event.preventDefault();       // cloning the data
         const newWorkShiftFormData = {
             ...workShiftFormData
         };
@@ -369,7 +369,7 @@ const WorkShift = () => {
         event.preventDefault();
         startOperation(OPERATIONS.FETCH);
         WorkShiftProvider.fetchOneWorkshift(workshift).then(response => {
-            if (isMounted.current == true) {
+            if (isMounted.current === true) {
                 fillFormToEdit(workshift, response);
                 successOperation(OPERATIONS.FETCH);
             }
@@ -388,8 +388,11 @@ const WorkShift = () => {
                 config: item,
             });
         }
+
+        if (formElementsArray.length === 0) return null;
         let table = (
             <div>
+                <h2>Turnos</h2>
                 {formElementsArray.map(element => (
 
                     // Creation  TimeTable element and populating
@@ -485,11 +488,11 @@ const WorkShift = () => {
                                 />
                     ))}
                     {editionId() //we consider that is and edition when we already have an ID 
-                        ? <Button btntype="Edit" clicked={(event) => editWorkshiftProceed(event, editionId())}>Guardar horario</Button>
-                        : <Button btntype="Save" clicked={createWorkshiftHandler}>Crear Horario</Button>
+                        ? <Button btntype="Primary" clicked={(event) => editWorkshiftProceed(event, editionId())}>Guardar</Button>
+                        : <Button btntype="Primary" clicked={createWorkshiftHandler}>Crear</Button>
                     }
 
-                    <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
+                    <Button clicked={clearFormHandler}>Limpiar</Button>
                     {operationInfo}
                 </form>
             </fieldset>

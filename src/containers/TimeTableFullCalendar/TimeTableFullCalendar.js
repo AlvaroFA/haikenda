@@ -91,9 +91,7 @@ const TimeTableFullCalendar = () => {
       let idTimetable = workshift.timetable;
       let timetable = timeTableData[idTimetable];
       let title = timetable.title + " (" + timetable.startTime + "-" + timetable.endTime + ")";
-      //let title = timetable.title 
       let idworker = workshift.worker;
-      //let start = workshift.startTime;
       let start = timetable.startTime;
       let end = workshift.endTime;
 
@@ -114,6 +112,8 @@ const TimeTableFullCalendar = () => {
 
   return (
     <div className="TimeTableFullCalendar">
+      <h1>Horarios</h1>
+
       <FullCalendar
         defaultView="resourceTimeline"
         plugins={[resourceTimelinePlugin]}
@@ -127,12 +127,8 @@ const TimeTableFullCalendar = () => {
         firstDay={1}
         nowIndicator={true}
         schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
-        resources=
-        {getDataWorker()}
-
-        events={
-          giveMeEvents()}
-
+        resources= {getDataWorker()}
+        events={giveMeEvents()}
       />
     </div>
   );

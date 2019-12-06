@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+
+// The base CSS must be imported before the other components
 import './index.css';
+
+import App from './App';
 import {BrowserRouter} from 'react-router-dom';
 
 

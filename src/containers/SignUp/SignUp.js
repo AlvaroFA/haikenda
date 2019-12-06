@@ -11,7 +11,7 @@ import { currentUser } from '../../providers/RealmProvider';
 
 /**
  * Checks that a string is a strong password:
- * length >=8, with at least 1 lower and upper case letters, 1 number and 1 symbol 
+ * length >=8, with at least 1 lower and upper case letters, 1 number and 1 symbol
  * @type {RegExp} */
 const strongPasswordRegExp = (() => {
     const min1LowerCase = "(?=.*[a-z])"
@@ -43,7 +43,6 @@ const initialWorkerForm = {
             placeholder: 'Nombre del trabajador'
         },
         value: '',
-
         label: 'Nombre',
         validation: {
             required: true
@@ -108,7 +107,7 @@ const initialWorkerForm = {
         validationErrors: ["Campo obligatorio"]
     },
     admin: {
-        elementType: 'input',
+        elementType: 'checkbox',
         inputConfig: {
             type: 'checkbox',
             placeholder: 'Administrador'
@@ -169,7 +168,6 @@ function SignUp() {
 
     const isValid = () => {
         for (const field in workerForm) {
-
             if (workerForm[field].validationErrors &&
                 workerForm[field].validationErrors.length > 0) {
                 return false;
@@ -205,7 +203,7 @@ function SignUp() {
         });
     }
 
-    //Using isMounted to avoid race condition 
+    //Using isMounted to avoid race condition
     useEffect(() => {
         loadDBDataInState();
         return (() => {
@@ -238,7 +236,7 @@ function SignUp() {
     };
 
     const inputChangeHandler = (evt, inputId) => {
-        // cloning the data 
+        // cloning the data
         const updatedWorkerForm = {
             ...workerForm
         };
@@ -263,7 +261,7 @@ function SignUp() {
     }
 
     /**
-     * @param event 
+     * @param event
      * @param uid determine which worker will be deleted
      */
     const erasehandler = (event, uid) => {
@@ -396,11 +394,11 @@ function SignUp() {
                             label={formElement.config.label}
                         />
                     ))}
-                    {editionId() //we consider that is and edition when we already have an ID 
-                        ? <Button btntype="Edit" clicked={(event) => editWorkerFormProceed(event, editionId())}>Guardar usuario</Button>
-                        : <Button btntype="Create" clicked={signUpProceed}>Crear usuario</Button>
+                    {editionId() //we consider that is and edition when we already have an ID
+                        ? <Button btnType="Primary" clicked={(event) => editWorkerFormProceed(event, editionId())}>Guardar usuario</Button>
+                        : <Button btnType="Primary" clicked={signUpProceed}>Crear usuario</Button>
                     }
-                    <Button className="Clear" clicked={clearForm}>Limpiar</Button>
+                    <Button clicked={clearForm}>Limpiar</Button>
                     {operationInfo}
                 </fieldset>
             </form>
@@ -419,8 +417,11 @@ function SignUp() {
             });
         }
 
+        if(workersArray.length === 0) return null;
+
         let table = (
             <div>
+                <h2>Usuarios</h2>
                 {workersArray.map(elemento => (
                     // Creation  Worker element and populating
                     <WorkerContainer
@@ -442,14 +443,13 @@ function SignUp() {
 
         return table;
     };
+
     return (
-        <Border>
-            <div>
-                <h4>Alta de usuario</h4>
-                {createForm()}
-                {createTable()}
-            </div>
-        </Border>
+        <div>
+            <h1>Alta de usuario</h1>
+            {createForm()}
+            {createTable()}
+        </div>
     )
 }
 

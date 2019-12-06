@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Input from '../../components/UI/Input/Input';
 import Button from '../../components/UI/Button/Button';
-import Border from '../../components/hoc/Border';
 import TimeTableContainer from '../../components/TimeTableContainer/TimeTableContainer';
 import provider from '../../providers/TimetableProvider';
 import useOperationState from '../../hooks/OperationState';
@@ -149,7 +148,7 @@ function TimeTableForm() {
         });
     }
 
-    //Using isMounted to avoid race condition 
+    //Using isMounted to avoid race condition
     useEffect(() => {
         loadDBDataInState();
         return (() => {
@@ -201,7 +200,7 @@ function TimeTableForm() {
     }
 
     /*Creation form
-    Iterates inpus values and save into a variable timeTableData. This variable is passed to axios post 
+    Iterates inpus values and save into a variable timeTableData. This variable is passed to axios post
     to store data into DDBB */
 
     const createTimeTableFormProceed = (event) => {
@@ -393,11 +392,11 @@ function TimeTableForm() {
                             label={formElement.config.label}
                         />
                     ))}
-                    {editionId() //we consider that is and edition when we already have an ID 
-                        ? <Button btntype="Edit" clicked={(event) => editTimeTableFormProceed(event, editionId())}>Editar horario</Button>
-                        : <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
+                    {editionId() //we consider that is and edition when we already have an ID
+                        ? <Button btnType="Primary" clicked={(event) => editTimeTableFormProceed(event, editionId())}>Editar horario</Button>
+                        : <Button btnType="Primary" clicked={createTimeTableFormProceed}>Crear horario</Button>
                     }
-                    <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
+                    <Button clicked={clearFormHandler}>Limpiar</Button>
                     {operationInfo}
                 </form>
             </fieldset>
@@ -411,6 +410,8 @@ function TimeTableForm() {
     const createTable = () => {
         let table = (
             <div>
+                <h2>Horarios</h2>
+
                 {timeTableElementsArray.map(elemento => (
                     // Creation  TimeTable element and populating
                     <TimeTableContainer
@@ -431,14 +432,11 @@ function TimeTableForm() {
 
 
     return (
-        //Added HOC (High order Component) and adding method to display data 
-        <Border>
-            <div>
-                <h4>Gestión de Horario</h4>
-                {createForm()}
-                {createTable()}
-            </div>
-        </Border>
+        <div>
+            <h1>Gestión de Horario</h1>
+            {createForm()}
+            {createTable()}
+        </div>
     )
 
 }

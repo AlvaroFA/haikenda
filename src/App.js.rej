@@ -1,0 +1,68 @@
+--- src/App.js
++++ src/App.js
+@@ -7,8 +7,9 @@ import TimeTableform from './containers/TimetableForm/TimetableForm';
+ import {Route, Switch} from 'react-router-dom';
+ import TimeTableFullCalendar from './containers/TimeTableFullCalendar/TimeTableFullCalendar';
+ import {fetchOneWorker} from './providers/WorkersProvider'
++import './App.css';
+ 
+-import firebaseApp from './components/firebase/Firebase'; 
++import firebaseApp from './components/firebase/Firebase';
+ 
+ import firebase from 'firebase/app';
+ 
+@@ -47,7 +48,7 @@ class App extends Component {
+     if(!this.state.sessionInfoRetrieved) return false;
+     if(!this.state.user) return false;
+     if(this.state.user.isAnonymous) return false;
+-    return true; 
++    return true;
+   }
+ 
+   isCompletelyRegistered(){
+@@ -68,29 +69,27 @@ class App extends Component {
+       return (<Layout>
+         <SignIn />
+       </Layout>);
+-    } 
+-    
++    }
++
+     if(!this.isCompletelyRegistered()) {
+       return (<Layout>
+         <div>Cuenta no registrada</div>
+-      </Layout>); 
+-    } 
++      </Layout>);
++    }
+ 
+     return (
+-      <div>
+-        <Layout 
+-            isLoggedIn={this.isUserLogged()}
+-            isAdmin={this.state.user && this.state.user.admin} 
+-            user={this.state.user}>
+-          <Switch>
+-            <Route  path= "/" exact component={TimeTableFullCalendar} />
+-            <Route exact path="/signin" component={SignIn} />
+-            <Route  path= "/signup" component={SignUp} />
+-            <Route  path= "/timeTableForm" component={TimeTableform} />
+-            <Route  path= "/workshift" component={Workshift} />
+-          </Switch>
+-        </Layout>
+-      </div>
++      <Layout
++          isLoggedIn={this.isUserLogged()}
++          isAdmin={this.state.user && this.state.user.admin}
++          user={this.state.user}>
++        <Switch>
++          <Route exact path="/" component={TimeTableFullCalendar} />
++          <Route path="/signin" component={SignIn} />
++          <Route path="/signup" component={SignUp} />
++          <Route path="/timeTableForm" component={TimeTableform} />
++          <Route path="/workshift" component={Workshift} />
++        </Switch>
++      </Layout>
+     );
+   }
+ }

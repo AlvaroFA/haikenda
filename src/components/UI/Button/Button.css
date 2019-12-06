@@ -1,4 +1,4 @@
-/* Pendiente de crear css para los botones en funcion del tipo del mismo 
+/* Pendiente de crear css para los botones en funcion del tipo del mismo
 cancel -- clear --- ok
 
 
@@ -11,3 +11,36 @@ En funcion del tipo de boton clasificado aqui la aplicacion reconocera el tipo d
 .Cancel -- Cancela el formulario
 
 */
+
+.Button {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+  margin-right: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.ButtonNormal {
+  color: #0677a1;
+  background-color: #fefefe;
+}
+.ButtonNormal:hover,
+.ButtonNormal:focus,
+.ButtonNormal:active {
+  color: #2d4159;
+  border-color: #2d4159;
+}
+
+.ButtonPrimary {
+  color: #fefefe;
+  background-color: #0677a1;
+}
+.ButtonPrimary:hover,
+.ButtonPrimary:focus,
+.ButtonPrimary:active {
+  background-color: #2d4159;
+}

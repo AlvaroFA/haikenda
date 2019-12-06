@@ -9,9 +9,41 @@ En funcion del tipo de boton clasificado aqui la aplicacion reconocera el tipo d
 
 */
 
+.Input {
+    margin-bottom: 16px;
+    display: block;
+}
+
+.InputHidden {
+    display: none;
+}
+
+.InputLabelText {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.Input input {
+    display: block;
+}
+
+.Input input[type=checkbox] {
+    display: inline-block;
+    width: auto;
+    margin-right: 8px;
+}
+
+.InputLabelCheckbox {
+    display: inline-block;
+}
+
+.Input.InputWithErrors input {
+    border-color: #b71c1c;
+}
 
 .IncorrectValues {
-    border: 1px solid red;
-    background-color:  orange;
-    
+    font-size: 14px;
+    color: #b71c1c;
+    display: inline-block;
+    margin-top: 4px;
 }

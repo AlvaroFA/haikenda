@@ -1,19 +1,19 @@
 import React from 'react';
 import './Input.css';
 
-// Pendiente de importar las clases del css 
-// Custom component for input used 
+// Pendiente de importar las clases del css
+// Custom component for input used
 const Input = (props)=>{
     let inputElement = null;
-    
+
     switch(props.elementType){
-  
+
         case('textArea'):
             inputElement = <textarea {...props.inputConfig} value={props.value}  onChange={props.changed}/>;
             break;
         case ('input'):
             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
-            break;    
+            break;
         case ('select'):
             inputElement = (
                 <select {...props.inputConfig} value={props.value} onChange={props.changed}>
@@ -22,29 +22,42 @@ const Input = (props)=>{
             );
             break;
         case ('checkbox'):
-            inputElement=(
-                <div>
-                <input {...props.inputConfig} value={props.value}/>;
-                <label> 
-                    {props.children}
-                </label>
-                </div>
-            );
+            inputElement = <input {...props.inputConfig} value={props.value}/>;
             break;
         default:
             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed} />;
     }
 
     const errors = (Array.isArray(props.incorrectValues) && props.incorrectValues) || [];
-    const label = props.inputConfig && props.inputConfig.hidden ? '' : <label>{props.label}</label> 
+    const label = props.inputConfig && props.inputConfig.hidden ? '' : props.label;
+
+    const inputClasses = [
+        `Input`,
+        props.inputConfig && props.inputConfig.hidden ? 'InputHidden' : '',
+        errors && errors.length > 0 ? 'InputWithErrors' : '',
+    ].join(' ')
+
+        console.log(props.elementType)
+    if (props.elementType === 'checkbox') {
+        return (
+            <label className={inputClasses}>
+                {inputElement}
+                <span className="InputLabelCheckbox">{label}</span>
+                {
+                    errors.map((item, key) => <span key={key} className="IncorrectValues">{item}</span>)
+                }
+            </label>
+        );
+    }
+
     return(
-        <div>
-        {label}
-        {inputElement}
-        {
-            errors.map((item, key) => <span key={key} className="validation-error">{item}</span>)
-        }
-        </div>
+        <label className={inputClasses}>
+            <span className="InputLabelText">{label}</span>
+            {inputElement}
+            {
+                errors.map((item, key) => <span key={key} className="IncorrectValues">{item}</span>)
+            }
+        </label>
     );
 };
 

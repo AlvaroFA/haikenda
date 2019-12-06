@@ -1,18 +1,28 @@
 .MenuBar {
-    background-color: grey;
-    height: 25px;
+    background-color: #59253A;
+    height: 60px;
     width: 100%;
     position: fixed;
     top: 0;
     left: 0;
     display: flex;
     justify-content: space-between;
-    align-items: right;
+    align-items: center;
     padding: 0 20px;
     box-sizing: border-box;
+    z-index: 100;
+    color: #fefefe;
 }
 
-.MenuBar nav {
-    height: 50%;
+.MenuBarLogo {
+    background-color: #fefefe;
+    color: #59253A;
 
+    text-transform: uppercase;
+    padding: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
 }

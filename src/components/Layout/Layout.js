@@ -1,13 +1,21 @@
 import React from 'react';
-import Border from '../hoc/Border';
 import MenuBar from  '../Navigation/MenuBar/MenuBar';
+import './Layout.css';
+import NavigationItems from '../Navigation/NavigationItems/NavigationItems';
 
-const layout = ({children, isLoggedIn, isAdmin, user})=>(
-    <Border>
+
+//import Timetable from '../../containers/TimeTable';
+
+const Layout = ({children, isLoggedIn, isAdmin, user})=>(
+    <div className="Layout">
         <MenuBar isLoggedIn={isLoggedIn} isAdmin={isAdmin} user={user}/>
-        <main>
+        <nav>
+            <NavigationItems user={user} isLoggedIn={isLoggedIn} isAdmin={isAdmin}/>
+        </nav>
+
+        <main className="LayoutMain">
             {children}
         </main>
-    </Border>
+    </div>
 );
-export default layout;
+export default Layout;
