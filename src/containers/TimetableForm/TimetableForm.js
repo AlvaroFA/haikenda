@@ -20,30 +20,6 @@ const initialTimeTableForm = {
             value: '',
             label: 'ID',
         },
-        oneTime: {
-            elementType: 'input',
-            inputConfig: {
-                type: 'checkbox',
-                name: 'once',
-            },
-            value: '',
-            label: 'Repetir una vez',
-            edited: false,
-            isValid: true,
-            validationErrors: []
-        },
-        weekly: {
-            elementType: 'input',
-            inputConfig: {
-                type: 'checkbox',
-                name: 'weekly',
-            },
-            value: '',
-            label: 'Semanalmente',
-            isValid: true,
-            validationErrors: []
-
-        },
         title: {
             elementType: 'input',
             inputConfig: {
@@ -56,7 +32,6 @@ const initialTimeTableForm = {
                 required: true,
             },
             edited: false,
-            isValid: false,
             validationErrors: ["Campo obligatorio"]
         },
         startTime: {
@@ -68,10 +43,10 @@ const initialTimeTableForm = {
             value: '',
             label: 'Hora de Inicio',
             validation: {
-                required: true
+                required: true,
+                lessThan: 'endTime',
             },
             edited: false,
-            isValid: false,
             validationErrors: ["Campo obligatorio"]
         },
         endTime: {
@@ -84,10 +59,9 @@ const initialTimeTableForm = {
             label: 'Hora de Fin',
             validation: {
                 required: true,
-                greaterThan: 'startTime'
+                greaterThan: 'startTime',
             },
             edited: false,
-            isValid: false,
             validationErrors: ["Campo obligatorio"]
         }
     }
@@ -112,29 +86,54 @@ function TimeTableForm() {
         clearOperation
     } = useOperationState();
 
-    //validation method
-    const checkValidation = (value, rules) => {
-        if (!rules) return true;
+    const isEmpty = (value) => {
+        return value.trim() === '';
+    }
+
+    const validateInputInForm = (form, value, rules)=> {
+        if (!rules) return [];
 
         let validationErrors = [];
+        
         if (rules.required) {
-            const isEmpty = value.trim() === '';
-            if (isEmpty) {
+            if (isEmpty(value)) {
                 validationErrors.push("Campo obligatorio");
                 return validationErrors;
             }
         }
 
-        if (rules.afterThat) {
-            let field = rules.afterThat;
-            field = timeTableFormState.timeTableForm[field];
-            const otherValue = field.value;
-            if (value > otherValue) {
-                validationErrors.push(`Tiene que ser posterior a '${field.label}'`);
+        if(!isEmpty(value)) {
+            if (rules.greaterThan) {
+                let otherField = rules.greaterThan;
+                otherField = form[otherField];
+                const otherValue = otherField.value;
+                if (!isEmpty(otherValue) && !(value > otherValue)) {
+                    validationErrors.push(`Tiene que ser mayor a '${otherField.label}'`);
+                }
+            }
+
+            if (rules.lessThan) {
+                let otherField = rules.lessThan;
+                otherField = form[otherField];
+                const otherValue = otherField.value;
+                if (!isEmpty(otherValue) && !(value < otherValue)) {
+                    validationErrors.push(`Tiene que ser menor que '${otherField.label}'`);
+                }
             }
         }
 
         return validationErrors;
+    }
+
+    const isValid = (form = timeTableFormState.timeTableForm) => {
+        for(const field in form) {
+            const input = form[field];
+            if(input.validationErrors && 
+                input.validationErrors.length>0) {
+                    return false;
+            }
+        }
+        return true;
     }
 
     //Variable to fecthing values from DDBB
@@ -142,7 +141,7 @@ function TimeTableForm() {
         startOperation(OPERATIONS.FETCH);
         provider.fetchTimetables().then(response => {
             if (isMounted.current == true) {
-                setData(response.data);
+                setData(response);
                 successOperation(OPERATIONS.FETCH);
             }
         }).catch((error) => {
@@ -161,20 +160,28 @@ function TimeTableForm() {
 
     /*verify when detect changes on input*/
     const inputChangeHandler = (event, inputId) => {
-        event.preventDefault();       // cloning the data 
+        event.preventDefault();       
+        event.stopPropagation();
         const newTimeTableForm = {
             ...timeTableFormState.timeTableForm
         };
         //accessing to elements
         const updatedElement = { ...newTimeTableForm[inputId] };
         updatedElement.value = event.target.value;
-        //checking validations
-        updatedElement.valid = checkValidation(updatedElement.value, updatedElement.validation);
+        updatedElement.edited = true;
         // settings new values
         newTimeTableForm[inputId] = updatedElement;
-        //overwritting the state
-        setTimeTableFormState({ ...timeTableFormState, timeTableForm: newTimeTableForm });
 
+        //Validate the complete form
+        for(const field in newTimeTableForm) {
+            const input = newTimeTableForm[field];
+            newTimeTableForm[field] = {
+                ...newTimeTableForm[field],
+                validationErrors: validateInputInForm(newTimeTableForm, input.value, input.validation)
+            };
+        }
+
+        setTimeTableFormState({ timeTableForm: newTimeTableForm });
     };
 
     // Clear form
@@ -184,17 +191,29 @@ function TimeTableForm() {
         setTimeTableFormState(initialTimeTableForm);
     }
 
+    const getDataFromForm = ()=>{
+        const timeTableData = {};
+        for (let timeTableElement in timeTableFormState.timeTableForm) {
+            timeTableData[timeTableElement] = timeTableFormState.timeTableForm[timeTableElement].value;
+        }
+        delete timeTableData.id;
+        return timeTableData;
+    }
+
     /*Creation form
     Iterates inpus values and save into a variable timeTableData. This variable is passed to axios post 
     to store data into DDBB */
 
     const createTimeTableFormProceed = (event) => {
         event.preventDefault();
-        const timeTableData = {};
-        for (let timeTableElement in timeTableFormState.timeTableForm) {
-            timeTableData[timeTableElement] = timeTableFormState.timeTableForm[timeTableElement].value;
+        event.stopPropagation();
+        //only submit if it's valid
+        if(!isValid()) {
+            failOperation(OPERATIONS.CREATE,"Algún dato no es válido");
+            return;
         }
-        delete timeTableData.id;
+
+        const timeTableData = getDataFromForm();
         //saving data
         startOperation(OPERATIONS.CREATE);
         provider.createTimetable(timeTableData)
@@ -216,6 +235,7 @@ function TimeTableForm() {
     */
     const erasehandler = (event, idTimetable) => {
         event.preventDefault();
+        event.stopPropagation();
         if (!confirm("Borrar horario?")) {
             return;
         }
@@ -238,11 +258,12 @@ function TimeTableForm() {
 
     const startEditionHandler = (event, timetableId) => {
         event.preventDefault();
+        event.stopPropagation();
         startOperation(OPERATIONS.FETCH);
         provider.fetchOneTimetable(timetableId).then(response => {
-            if (isMounted.current == true) {
-                console.log(response.data);
-                fillFormToEdit(timetableId, response.data);
+            if (isMounted.current === true) {
+                console.log(response);
+                fillFormToEdit(timetableId, response);
                 successOperation(OPERATIONS.FETCH);
             }
         }).catch(error => {
@@ -253,6 +274,7 @@ function TimeTableForm() {
 
     const editTimeTableFormProceed = (event, timetableId) => {
         event.preventDefault();
+        event.stopPropagation();
         //coger los datos del form
         const timeTableData = {};
         for (let timeTableElement in timeTableFormState.timeTableForm) {
@@ -285,10 +307,20 @@ function TimeTableForm() {
             newForm[fieldName] = {
                 ...newForm[fieldName],
                 value,
-                isValid: true
+                edited: true
             }
         }
-        setTimeTableFormState({ ...timeTableFormState, timeTableForm: newForm });
+
+        //Validate the complete form
+        for(const field in newForm) {
+            const input = newForm[field];
+            newForm[field] = {
+                ...newForm[field],
+                validationErrors: validateInputInForm(newForm, input.value, input.validation)
+            };
+        }
+
+        setTimeTableFormState({ timeTableForm: newForm });
     }
 
     /*Array to populate forms elements*/
@@ -306,32 +338,37 @@ function TimeTableForm() {
             id: k,
             datos: dataState[k]
         });
-
-
     }
-
+    
     const editionId = () => timeTableFormState.timeTableForm.id.value;
+
+    const getOperationInfo = ()=>{
+        if(operation.operation===OPERATIONS.CREATE || operation.operation===OPERATIONS.UPDATE) {
+            if(operation.waiting) 
+                return <p className="state waiting">Guardando...</p>
+            if (operation.success) 
+                return <p className="state success">Usuario guardado</p>
+            if (operation.failed) 
+                return <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
+        }
+    }
 
     /*Creation form method */
     const createForm = () => {
         const formElementsArray = [];
-        console.log(timeTableFormState.timeTableForm)
         for (let k in timeTableFormState.timeTableForm) {
             let item = timeTableFormState.timeTableForm[k]
-            formElementsArray.push({
-                id: k,
-                config: item
-            });
+            if(item.label) {
+                formElementsArray.push({
+                    id: k,
+                    config: item
+                });
+            }
         }
 
         const failedCreationOrEdition = hasFailed(OPERATIONS.CREATE) || hasFailed(OPERATIONS.UPDATE);
 
-        let state;
-        if(operation.operation==='submit') {
-            if(operation.waiting) state = <p className="state waiting">Guardando...</p>
-            else if (operation.success) state = <p className="state success">Usuario guardado</p>
-            else if (operation.failed) state = <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
-        }
+        const operationInfo = getOperationInfo();
 
         let form = (
             <fieldset disabled={isWaitingForOperation()}>
@@ -354,7 +391,7 @@ function TimeTableForm() {
                         : <Button btntype="Create" clicked={createTimeTableFormProceed}>Crear horario</Button>
                     }
                     <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
-                    {state}
+                    {operationInfo}
                 </form>
             </fieldset>
         );

@@ -11,7 +11,7 @@ export function fetchWorkers() {
     return firebaseApp.database().ref('/workers').once('value').then((snapshot)=>{
         if(snapshot)
             return snapshot.val();
-        else 
+        else
             return defaultEmptyWorkers;
     });
 }

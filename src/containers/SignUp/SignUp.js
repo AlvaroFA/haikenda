@@ -49,7 +49,6 @@ const initialWorkerForm = {
             required: true
         },
         edited: false,
-        isValid: false,
         validationErrors: ["Campo obligatorio"]
     },
     surname: {
@@ -65,7 +64,6 @@ const initialWorkerForm = {
 
         },
         edited: false,
-        isValid: false,
         validationErrors: ["Campo obligatorio"]
     },
     email: {
@@ -82,7 +80,6 @@ const initialWorkerForm = {
             checkEmail: true
         },
         edited: false,
-        isValid: false,
         validationErrors: ["Campo obligatorio"]
     },
     job: {
@@ -94,7 +91,6 @@ const initialWorkerForm = {
         value: '',
         label:'Descripción',
         edited: false,
-        isValid: true,
     },
     password: {
         elementType: 'input',
@@ -109,7 +105,6 @@ const initialWorkerForm = {
             checkPassword: true
         },
         edited: false,
-        isValid: false,
         validationErrors: ["Campo obligatorio"]
     },
     admin: {
@@ -121,7 +116,6 @@ const initialWorkerForm = {
         value: false,
         label:'Administrador',
         edited: false,
-        isValid: true,
     },
 }
 
@@ -254,7 +248,6 @@ function SignUp() {
         updatedElement.edited = true;
         //checking validations
         updatedElement.validationErrors= checkValidation(updatedElement.value, updatedElement.validation);
-        updatedElement.isValid = !!updatedElement.validationErrors
         // settings new values
         updatedWorkerForm[inputId] = updatedElement;
         //overwritting the state
@@ -336,7 +329,7 @@ function SignUp() {
             newForm[fieldName] = {
                 ...newForm[fieldName],
                 value,
-                isValid: true
+                edited: true
             }
         }
         setWorkerForm(newForm);
@@ -356,6 +349,16 @@ function SignUp() {
         });
     }
 
+    const getOperationInfo = ()=>{
+        if(operation.operation===OPERATIONS.CREATE || operation.operation==OPERATIONS.UPDATE) {
+            if(operation.waiting) 
+                return <p className="state waiting">Guardando...</p>
+            if (operation.success) 
+                return <p className="state success">Usuario guardado</p>
+            if (operation.failed) 
+                return <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
+        }
+    }
 
     const createForm = ()=>{
         const formElementsArray = [];
@@ -368,12 +371,7 @@ function SignUp() {
 
         const failedCreationOrEdition = hasFailed(OPERATIONS.CREATE) || hasFailed(OPERATIONS.UPDATE);
 
-        let state;
-        if(operation.operation==='submit') {
-            if(operation.waiting) state = <p className="state waiting">Guardando...</p>
-            else if (operation.success) state = <p className="state success">Usuario guardado</p>
-            else if (operation.failed) state = <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
-        }
+        const operationInfo = getOperationInfo();
     
         const form = (
             <form>
@@ -395,7 +393,7 @@ function SignUp() {
                         : <Button btntype="Create" clicked={signUpProceed}>Crear usuario</Button>
                     }
                     <Button className="Clear" clicked={clearForm}>Limpiar</Button>            
-                    {state}    
+                    {operationInfo}    
                 </fieldset>
             </form>
         );
