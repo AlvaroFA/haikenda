@@ -21,6 +21,16 @@ const Input = (props)=>{
                 </select>
             );
             break;
+        case ('checkbox'):
+            inputElement=(
+                <div>
+                <input {...props.inputConfig} value={props.value}/>;
+                <label> 
+                    {props.children}
+                </label>
+                </div>
+            );
+            break;
         default:
             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed} />;
     }
