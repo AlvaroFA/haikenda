@@ -347,9 +347,9 @@ function TimeTableForm() {
             if(operation.waiting) 
                 return <p className="state waiting">Guardando...</p>
             if (operation.success) 
-                return <p className="state success">Usuario guardado</p>
+                return <p className="state success">Horario guardado</p>
             if (operation.failed) 
-                return <p className="state failed">{"No se pudo guardar el usuario: "+operation.reason}</p>
+                return <p className="state failed">{"No se pudo guardar el horario: "+operation.reason}</p>
         }
     }
 
