@@ -232,6 +232,7 @@ function SignUp({user}) {
         Workers.createWorkerAndAccount(newWorker)
         .then(result => {
             successOperation(OPERATIONS.CREATE);
+            loadDBDataInState();
             clearForm();
         })
         .catch(error => {
