@@ -1,89 +1,83 @@
-# HELLO THERE !!!!
+# HaiKenda
 
-# HaiKenda- Aplicación Web para Xestión de quendas de traballo
+**Aplicación Web para Xestión de quendas de traballo**
 
 Proxecto Final de Ciclo Superior de FP Desenvolvemento de Aplicións Web, feito con React e Firebase
 
-
-## Librerias utilizadas
+## Dependencias NPM
 
 - Principais librarias:
  
 | Libraria | Descripción |
 | ------------- | ------------- |
-| FullCalendar  | JavaScript Calendar open source |
-| create react application| Permite creación de forma rápida e sinxela de esquemas para proxectos en React |
-| FireBase| Conten a funcionalidade necesaria de comunicación co backend.
-|react-router-dom| Xestión do enrutado durante a navegación na aplicación.
+| fullcalendar  | JavaScript Calendar open source |
+| create-react-app | Permite creación de forma rápida e sinxela de esquemas para proxectos en React |
+| firebase | Conten a funcionalidade necesaria de comunicación co backend.
+| react-router-dom | Xestión do enrutado durante a navegación na aplicación.
 
 ## Primeiros pasos
 
-Instalación:
+### Instalación do runtime
 
-Link de node  https://nodejs.org/es/download/
-
-Link para o manual de instalacion de node.js na maioria dos sistema operativos
-https://github.com/nodesource/distributions/blob/master/README.md.
-
-Unha vez instalado executamos node -v para verificar ca instalación foi realizada correctamente.
-
-Link de npm   https://www.npmjs.com/get-npm
-A instalacion de npm xa ven incluida en node.js.
-Para verificar a correcta instalacion, executamos `npm --v`, con is obtemos a versión instalada.
-
-## Versiones mínimas de librarias
 | Libraria | Versión |
 | ------------- | ------------- |
 | Node  | v13.1.0 |
 | NPM  | 6.13.0 |
 
+* [`node`](https://nodejs.org/es/download/)
+    * [Manual de instalacion de node.js](https://github.com/nodesource/distributions/blob/master/README.md) na maioria dos sistema operativos
+    * Unha vez instalado executamos `node -v` para verificar que a instalación foi realizada correctamente.
+
+* [`npm`](https://www.npmjs.com/get-npm)
+    * A instalacion de npm xa ven incluida en node.js.
+    * Para verificar a correcta instalacion, executamos `npm --v`, con isto obtemos a versión instalada.
+
+### Instalación das dependencias
+
 Unha vez verificadas ambas librerias estén correctas, executamos npm install no  directorio onde está albergado o código.
 Con isto comenzará a descarga e instalación das librarias necesarias. Unha vez finalizado o proceso, executamos a instrucción 
 
-`npm start` -  Inicia o servicio en modo desenvolvemento
-`npm runtime build` - Xera o bundle e tódolos assets necesarios
+* `npm start` -  Inicia o servicio en modo desenvolvemento
+* `npm run-script build` - Xera o bundle e tódolos assets necesarios
 
-## Configuración de Firebase 
+### Configuración de Firebase
 
-### Creación do proxecto en Firebase
+#### Creación do proxecto en Firebase
 
 Dita creación esta explicada na seguinte ligazón https://firebase.google.com/docs/web/setup#create-firebase-project
 
-### Accedemos a Firebase e creamos o proxecto
-A configuración de Firebase para proxecto está na ruta `"src\components\firebase\config.js"`. Neste arquivo tense que poñer a configuracion correspondente o proxecto creado en Firebase
-
-### Rexistro da aplicación 
+#### Rexistro da aplicación 
 
 Para que o correcto uso de Firebase hai que rexistrar a aplicación, dito procedemento ven descrito na seguinte ligazón https://firebase.google.com/docs/web/setup#register-app
 
-### Regras da Bases de datos
+A configuración do teu proxecto debe gardarse en [`src/components/firebase/config.js`](src/components/firebase/config.js)
 
-Para obter a información da base de datos do proxecto recién creado hai que seguir os pasos que se indican na ligazón https://firebase.google.com/docs/web/setup#config-object
-A configuración paraa as regras de permisos na Base de datos de Firebase están ubicada en `"\haikenda\firebase_db_rules"`
-```
-{
-  "rules": {
-    "timetable": {
-      ".read": "auth!=null && root.child('workers').child(auth.uid).exists()",
-      ".write": "auth!=null && root.child('workers').child(auth.uid).child('worker/admin').val()===true"
-    },
-    "workers": {
-      ".read": "auth!=null && root.child('workers').child(auth.uid).exists()",
-      ".write": "auth!=null && root.child('workers').child(auth.uid).child('worker/admin').val()===true"
-    },
-    "workshift": {
-      ".read": "auth!=null && root.child('workers').child(auth.uid).exists()",
-      ".write": "auth!=null && root.child('workers').child(auth.uid).child('worker/admin').val()===true"
-    }
-  }
-}
-```
+Estes parámetros de configuración proporcionaranse durante o seu rexistro, aínda que tamén se poden obter despóis [seguindo estes pasos](https://support.google.com/firebase/answer/7015592)
 
-### Métodos de authenticación 
+Máis información sobre este [obxecto de configuración de Firebase aquí](https://firebase.google.com/docs/web/setup#config-object)
 
-Na consola de `"firebase/Authentication"` habilitamos os proveedores de inicio de sesión Correo electrónico / contrasinal e anónimo
+#### Autenticación
 
-### Despregue da aplicación en Firebase 
+Na consola de Firebase `Authentication` > `Métodos de Inicio de sesión` habilitamos os proveedores `Correo electrónico/contraseña` e `Anónimo`
 
-Unha vez executado a instrucción `npm runtime build` hai que seguir os pasos indicados en https://firebase.google.com/docs/web/setup#install-cli-deploy
+Esto vainos permitir autenticarnos con usuario email e contrasinal.
 
+#### Autorización para o acceso á base de datos
+
+Na consola de Firebase `Database` > `Reglas` copia o contido de [`firebase_db_rules`](firebase_db_rules)
+
+Esto permitirá protexer os datos, de forma que sólo os usuarios rexistrados poidan lelos, e solo os administradores poidan editalos.
+
+#### Datos mínimos iniciais da base de datos
+
+Para poder acceder á aplicación, vai ser necesario polo menos un usuario administrador.
+Vai á sección de Authentication da túa consola de firebase, e registra o teu usuario administrador con Email e Contrasinal.
+A continuación copia o seu UID.
+
+Vai agora á sección de Database, e recrea a estructura que aparece en [`firebase_db_setup_data`](firebase_db_setup_data)
+
+Esto permitirache acceder con este usuario administrador.
+
+#### Despregue da aplicación en Firebase
+
+Unha vez executado a instrucción `npm run-script build` hai que seguir os pasos indicados en https://firebase.google.com/docs/web/setup#install-cli-deploy
