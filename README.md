@@ -79,3 +79,5 @@ Esto permitirache acceder con este usuario administrador.
 #### Despregue da aplicación en Firebase
 
 Unha vez executado a instrucción `npm run-script build` hai que seguir os pasos indicados en https://firebase.google.com/docs/web/setup#install-cli-deploy
+
+Antes de despregar introduce o ID do teu proxecto de Firebase en [`.firebaserc`](.firebaserc)
