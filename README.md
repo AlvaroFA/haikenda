@@ -4,41 +4,39 @@
 
 Proxecto Final de Ciclo Superior de FP Desenvolvemento de Aplicións Web, feito con React e Firebase
 
-## Dependencias NPM
-
-- Principais librarias:
+## Pricipáis librerías utilizadas
  
 | Libraria | Descripción |
 | ------------- | ------------- |
-| fullcalendar  | JavaScript Calendar open source |
-| create-react-app | Permite creación de forma rápida e sinxela de esquemas para proxectos en React |
-| firebase | Conten a funcionalidade necesaria de comunicación co backend.
-| react-router-dom | Xestión do enrutado durante a navegación na aplicación.
+| `create-react-app` | Permite creación de forma rápida e sinxela de esquemas para proxectos en React. Utilizada sólo durante o desenrolo, non se empaqueta. |
+| `fullcalendar`  | JavaScript Calendar open source |
+| `firebase` | Conten a funcionalidade necesaria de comunicación co backend.
+| `react-router-dom` | Xestión do enrutado durante a navegación na aplicación.
 
 ## Primeiros pasos
 
 ### Instalación do runtime
 
-| Libraria | Versión |
-| ------------- | ------------- |
-| Node  | v13.1.0 |
-| NPM  | 6.13.0 |
+Para o desenrolo, é necesario instalar o runtime de node:
 
-* [`node`](https://nodejs.org/es/download/)
+* [`node v12.13.1`](https://nodejs.org/es/download/)
     * [Manual de instalacion de node.js](https://github.com/nodesource/distributions/blob/master/README.md) na maioria dos sistema operativos
     * Unha vez instalado executamos `node -v` para verificar que a instalación foi realizada correctamente.
 
-* [`npm`](https://www.npmjs.com/get-npm)
+* [`npm v6.12.1`](https://www.npmjs.com/get-npm)
     * A instalacion de npm xa ven incluida en node.js.
     * Para verificar a correcta instalacion, executamos `npm --v`, con isto obtemos a versión instalada.
 
-### Instalación das dependencias
+### Instalación das dependencias NPM
 
-Unha vez verificadas ambas librerias estén correctas, executamos npm install no  directorio onde está albergado o código.
-Con isto comenzará a descarga e instalación das librarias necesarias. Unha vez finalizado o proceso, executamos a instrucción 
+Unha vez verificadas ambas librerias estén correctas:
+* `npm install` - Descarga e instalación as librarias necesarias declaradas no [`package-lock.json`](package-lock.json). 
 
-* `npm start` -  Inicia o servicio en modo desenvolvemento
-* `npm run-script build` - Xera o bundle e tódolos assets necesarios
+### Execución da aplicación
+
+* `npm start` -  Inicia un servidor en local, desplegando nel a aplicación web
+* `npm run-script build` - Xera o bundle de tódolos assets necesarios na carpeta [`build`](build)
+
 
 ### Configuración de Firebase
 
