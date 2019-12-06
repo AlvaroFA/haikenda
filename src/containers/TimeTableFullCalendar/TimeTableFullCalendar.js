@@ -90,17 +90,21 @@ const TimeTableFullCalendar = () => {
       const workshift = workShiftData[idWorkShift];
       let idTimetable = workshift.timetable;
       let timetable = timeTableData[idTimetable];
-      let title = timetable.title;
+      //let title = timetable.title + " ("+ timetable.startTime + "-" + timetable.endTime + ")";
+      let title = timetable.title 
       let idworker = workshift.worker;
-      let start = workshift.startTime;
+      //let start = workshift.startTime;
+      let start = timetable.startTime;
       let end = workshift.endTime;
     
       arrayEventos.push({
         resourceId: idworker,
         id: idWorkShift,
         title,
-        start,
-        end,
+        startTime: start,
+        endTime: end,
+        start:end,
+
       })
     }
     return arrayEventos;
@@ -114,10 +118,10 @@ const TimeTableFullCalendar = () => {
         defaultView="resourceTimeline"
         plugins={[resourceTimelinePlugin]}
         header={{
-          left: 'prev,next ,today',
+          left: 'prev,next ,resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth',
           center: 'title',
           // TO DO MODIFY BUTTON CALENDAR
-          right: 'resourceTimelineMonth, resourceTimelineDay, resourceTimeline'
+          right: 'resourceTimelineMonth, resourceTimelineDay'
         }}
         locale='es'
         firstDay={1}
@@ -125,19 +129,10 @@ const TimeTableFullCalendar = () => {
         schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
         resources=
         {getDataWorker()}
+
         events={
           giveMeEvents()}
-      /*{[
-        {
-          resourceId: '65sfCQ8su3acXRyK24PDPWiv16u1',
-          id: '1',
-          title: 'turno3',
-          start: '2019-12-01 ',
-          end: '2019-12-02',
-        }
-      ]
-      }
-      */
+      
       />
     </div>
   );
