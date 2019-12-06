@@ -15,6 +15,16 @@ export function registerUserAccount(email, password) {
                 + `Code: ${code}\n`
                 + `Message: ${message}\n`
                 + `Mensaje mostrado al usuario:${userMessage}`);
+            } else  {
+                //TODO: este fix es porque no se puede obtener un usuario que ya existiese en el realm
+                //Entonces, no puedo saber cual es su id para crearlo en la DB
+                //Posibles soluciones:
+                // - backend en node y utilizar firebase-admin
+                // - utilizar el email como clave del usuario, pero la BD realtime no permite esto, porque tiene caracteres
+                // especiales (como el punto). Habría que cambiar a firestorage, que sí lo permite (sencillo cambio en los providers para que consuman de ahí y no de database())
+                if(alert('Este usuario ya existía en la aplicación. Su registro solo so puede realizar manualmente. Contacte con su administrador.')){
+                    return;
+                }
             }
             throw {code, message: userMessage};
         });
