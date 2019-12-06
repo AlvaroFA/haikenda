@@ -33,6 +33,7 @@ class App extends Component {
             user: {
               ...worker,
               uid: user.uid,
+              realmEmail: user.email,
               isAnonymous: user.isAnonymous
             },
             sessionInfoRetrieved: true
@@ -71,7 +72,9 @@ class App extends Component {
     }
 
     if (!this.isCompletelyRegistered()) {
-      return (<Layout>
+      return (<Layout
+        isLoggedIn={this.isUserLogged()}
+        user={this.state.user}>
         <div>Cuenta no registrada</div>
       </Layout>);
     }
