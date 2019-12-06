@@ -1,6 +1,6 @@
 import React from 'react';
 import '../MenuBar/MenuBar.css';
-import NavigationItems from '../../Navigation/NavigationItems/NavigationItems'
+import {NavLink} from 'react-router-dom';
 
 function getDisplayName(user) {
     if (!user) {
@@ -16,9 +16,13 @@ function getDisplayName(user) {
 
 const menubar = ({ isLoggedIn, isAdmin, user }) => (
     <header className="MenuBar">
-        <div className="MenuBarLogo">
-            Haikenda
-        </div>
+
+        <NavLink to="/" exact className="MenuBarLink">
+            <div className="MenuBarLogo">
+                Haikenda
+            </div>
+        </NavLink>
+        
 
         <span>{getDisplayName(user)}</span>
     </header>
