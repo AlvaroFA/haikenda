@@ -330,7 +330,8 @@ function SignUp() {
             newForm[fieldName] = {
                 ...newForm[fieldName],
                 value,
-                edited: true
+                edited: true,
+                validationErrors: checkValidation(value, newForm[fieldName].validation)
             }
         }
         setWorkerForm(newForm);
