@@ -11,6 +11,17 @@ import TimeTableProvider from '../../providers/TimetableProvider';
 /* Component who assign worker to a timetable */
 
 const initialWorkShiftFormData = {
+    id: {
+        elementType: 'input',
+        inputConfig: {
+            type: 'text',
+            name: 'id',
+            disabled: true,
+            hidden: true,
+        },
+        value: '',
+        label: 'ID',
+    },
     worker: {
         elementType: 'select',
         value: '',
@@ -65,7 +76,7 @@ const WorkShift = () => {
     const loadDBDataInState = () => {
         WorkerProvider.fetchWorkers().then(response => {
             if (isMounted.current === true) {
-                setWorkerData(response.data);
+                setWorkerData(response);
             }
         })
 
@@ -77,7 +88,7 @@ const WorkShift = () => {
 
         WorkShiftProvider.fetchWorkshifts().then(response => {
             if (isMounted.current === true) {
-                setworkShiftData(response.data);
+                setworkShiftData(response);
             }
         })
 
@@ -147,10 +158,11 @@ const WorkShift = () => {
     const createWorkshift = (event) => {
         event.preventDefault();
         const workshiftData = {};
+        console.log(workshiftData);
         for (let field in workShiftFormData) {
             workshiftData[field] = workShiftFormData[field].value;
         }
-        delete workshiftData.id;
+        //delete workshiftData.id;
         //saving data
         WorkShiftProvider.createWorkshift(workshiftData)
             .then(() => {
@@ -227,7 +239,7 @@ const WorkShift = () => {
         event.preventDefault();
         console.log('borrar');
         // execiting delete method
-        WorkShiftProvider.eraseWorkshift(workshift).then(
+        WorkShiftProvider.eraseWorkshift(workshift.id).then(
             response => {
                 // reloading new data
                 loadDBDataInState();
@@ -239,6 +251,7 @@ const WorkShift = () => {
     /* to check */
     const fillFormToEdit = (id, data) => {
         const newForm = { ...workShiftFormData };
+        console.log('lña od es' + newForm)
         newForm.id = { ...newForm.id };
         newForm.id.value = id;
         newForm.id.inputConfig = { ...newForm.id.inputConfig, hidden: false };
@@ -250,7 +263,7 @@ const WorkShift = () => {
                 isValid: true
             }
         }
-        setWorkShiftFormData({ ...workShiftFormData });
+        setWorkShiftFormData({ newForm });
     }
 
 
@@ -260,8 +273,7 @@ const WorkShift = () => {
         event.preventDefault();
         WorkShiftProvider.fetchOneWorkshift(workshift).then(response => {
             if (isMounted.current == true) {
-                console.log(response.data);
-                fillFormToEdit(workshift, response.data);
+                fillFormToEdit(workshift, response);
             }
         })
     }

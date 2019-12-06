@@ -8,8 +8,8 @@ export function eraseWorkshift(workshift) {
     return firebaseApp.database().ref('/workers/' + workshift).remove();
 }
 
-export function createWorkshift(workshiftData) {
-    return firebaseApp.database().ref('/workshift/').set({
+export function createWorkshift(workshiftData, id) {
+    return firebaseApp.database().ref('/workshift/' + id).set({
         ...workshiftData
     });
 }
