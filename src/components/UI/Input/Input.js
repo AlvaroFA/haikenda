@@ -3,16 +3,16 @@ import './Input.css';
 
 // Pendiente de importar las clases del css
 // Custom component for input used
-const Input = (props)=>{
+const Input = (props) => {
     let inputElement = null;
 
-    switch(props.elementType){
+    switch (props.elementType) {
 
-        case('textArea'):
-            inputElement = <textarea {...props.inputConfig} value={props.value}  onChange={props.changed}/>;
+        case ('textArea'):
+            inputElement = <textarea {...props.inputConfig} value={props.value} onChange={props.changed} />;
             break;
         case ('input'):
-            inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed}/>;
+            inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed} />;
             break;
         case ('select'):
             inputElement = (
@@ -22,7 +22,7 @@ const Input = (props)=>{
             );
             break;
         case ('checkbox'):
-            inputElement = <input {...props.inputConfig} value={props.value}/>;
+            inputElement = <input {...props.inputConfig} checked={props.value} onChange={props.changed} />;
             break;
         default:
             inputElement = <input {...props.inputConfig} value={props.value} onChange={props.changed} />;
@@ -37,7 +37,6 @@ const Input = (props)=>{
         errors && errors.length > 0 ? 'InputWithErrors' : '',
     ].join(' ')
 
-        console.log(props.elementType)
     if (props.elementType === 'checkbox') {
         return (
             <label className={inputClasses}>
@@ -50,7 +49,7 @@ const Input = (props)=>{
         );
     }
 
-    return(
+    return (
         <label className={inputClasses}>
             <span className="InputLabelText">{label}</span>
             {inputElement}

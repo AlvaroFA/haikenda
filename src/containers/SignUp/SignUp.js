@@ -187,6 +187,8 @@ function SignUp() {
         for (let formWorkElement in workerForm) {
             formWorkerData[formWorkElement] = workerForm[formWorkElement].value;
         }
+        //id is a hidden input, we don't want to send
+        delete formWorkerData.id;
         return formWorkerData;
     }
 
@@ -242,7 +244,11 @@ function SignUp() {
         };
         //accessing to elements
         const updatedElement = { ...updatedWorkerForm[inputId] };
-        updatedElement.value = event.target.value;
+        if (event.target.type === "checkbox") {
+            updatedElement.value = event.target.checked;
+        } else {
+            updatedElement.value = event.target.value;
+        }
         updatedElement.edited = true;
         //checking validations
         updatedElement.validationErrors = checkValidation(updatedElement.value, updatedElement.validation);
@@ -296,12 +302,7 @@ function SignUp() {
         }
 
         //coger los datos del form
-        const workerData = {};
-        for (let workerProp in workerForm) {
-            workerData[workerProp] = workerForm[workerProp].value;
-        }
-        delete workerData.id; //we don't want to send the id as a param, it will be only in the URL
-        //saving data
+        const workerData = getValuesFromForm();
         delete workerData.email; //we don't want to send the email, because we won't be able to update it anyway
         startOperation(OPERATIONS.UPDATE);
         provider.updateWorker(uid, workerData)
@@ -320,7 +321,7 @@ function SignUp() {
 
 
     const fillFormToEdit = (id, data) => {
-        const newForm = { ...workerForm };
+        const newForm = { ...initialWorkerForm };
         newForm.id = { ...newForm.id };
         newForm.id.value = id;
         newForm.id.inputConfig = { ...newForm.id.inputConfig, hidden: false };
@@ -330,6 +331,9 @@ function SignUp() {
         //We don't allow to edit the password
         delete newForm.password;
         for (const fieldName in data) {
+            //this shouldn't happen, but because the DB can be full of testing data
+            if (fieldName === 'id') continue;
+
             let value = data[fieldName]
             newForm[fieldName] = {
                 ...newForm[fieldName],
@@ -417,7 +421,7 @@ function SignUp() {
             });
         }
 
-        if(workersArray.length === 0) return null;
+        if (workersArray.length === 0) return null;
 
         let table = (
             <div>
