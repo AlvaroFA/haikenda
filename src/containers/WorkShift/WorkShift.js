@@ -6,6 +6,8 @@ import WorkShiftContainer from '../../components/WorkShiftContainer/WorkShiftCon
 import WorkShiftProvider from '../../providers/WorkshiftProvider';
 import WorkerProvider from '../../providers/WorkersProvider';
 import TimeTableProvider from '../../providers/TimetableProvider';
+import WorkshiftProvider from '../../providers/WorkshiftProvider';
+import useOperationState from '../../hooks/OperationState';
 
 
 /* Component who assign worker to a timetable */
@@ -73,6 +75,15 @@ const WorkShift = () => {
     const [workerData, setWorkerData] = useState({});
     const [timeTableData, setTimeTableData] = useState({});
     const [workShitData, setworkShiftData] = useState({});
+    const { operation,
+        OPERATIONS,
+        hasFailed,
+        isWaitingForOperation,
+        failOperation,
+        successOperation,
+        startOperation,
+        clearOperation
+    } = useOperationState();
     const loadDBDataInState = () => {
         WorkerProvider.fetchWorkers().then(response => {
             if (isMounted.current === true) {
@@ -82,7 +93,7 @@ const WorkShift = () => {
 
         TimeTableProvider.fetchTimetables().then(response => {
             if (isMounted.current === true) {
-                setTimeTableData(response.data);
+                setTimeTableData(response);
             }
         })
 
@@ -155,14 +166,13 @@ const WorkShift = () => {
         return workerList;
     }
 
-    const createWorkshift = (event) => {
+    const createWorkshiftHandler = (event) => {
         event.preventDefault();
         const workshiftData = {};
-        console.log(workshiftData);
         for (let field in workShiftFormData) {
             workshiftData[field] = workShiftFormData[field].value;
         }
-        //delete workshiftData.id;
+        delete workshiftData.id;
         //saving data
         WorkShiftProvider.createWorkshift(workshiftData)
             .then(() => {
@@ -208,7 +218,7 @@ const WorkShift = () => {
 
     const giveMeDataWorker = (id) => {
         let data = workerData;
-        if (!data[id]) {
+        if (!data || !data[id]) {
             return;
         }
         let name = data[id].worker.name;
@@ -217,10 +227,9 @@ const WorkShift = () => {
         return `${name} ${surname}`;
     }
 
-
     const giveMeDataTimetable = (id) => {
         let data = timeTableData;
-        if (!data[id]) {
+        if (!data || !data[id]) {
             return;
         }
         let title = data[id].title;
@@ -229,26 +238,23 @@ const WorkShift = () => {
 
         return `${title} (${inicio}-${fin})`
     }
+
     const clearFormHandler = (event) => {
         event.preventDefault();
         setWorkShiftFormData(initialWorkShiftFormData);
     }
 
-    const erasehandler = (event, workshift) => {
-        console.log(workshift);
+    const erasehandler = (event, id) => {
         event.preventDefault();
-        console.log('borrar');
         // execiting delete method
-        WorkShiftProvider.eraseWorkshift(workshift.id).then(
+        WorkShiftProvider.eraseWorkshift(id).then(
             response => {
                 // reloading new data
                 loadDBDataInState();
-                setworkShiftData(setworkShiftData);
             }
         );
     };
 
-    /* to check */
     const fillFormToEdit = (id, data) => {
         const newForm = { ...workShiftFormData };
         console.log('lña od es' + newForm)
@@ -263,11 +269,8 @@ const WorkShift = () => {
                 isValid: true
             }
         }
-        setWorkShiftFormData({ newForm });
+        setWorkShiftFormData(newForm);
     }
-
-
-
 
     const startEditionHandler = (event, workshift) => {
         event.preventDefault();
@@ -277,10 +280,6 @@ const WorkShift = () => {
             }
         })
     }
-
-
-
-
 
     const createTable = () => {
         const formElementsArray = [];
@@ -311,6 +310,32 @@ const WorkShift = () => {
         return table;
     }
 
+    const editWorkshiftProceed = (event, workshiftId) => {
+        event.preventDefault();
+        //coger los datos del form
+        const currentFormData = {};
+        for (let field in workShiftFormData) {
+            currentFormData[field] = workShiftFormData[field].value;
+        }
+        delete currentFormData.id; //we don't want to send the id as a param, it will be only in the URL
+        //saving data
+        startOperation(OPERATIONS.UPDATE);
+        WorkshiftProvider.updateWorkshift(workshiftId, currentFormData)
+            .then(() => {
+                //Clear form
+                setWorkShiftFormData(initialWorkShiftFormData);
+                //reloading data list
+                loadDBDataInState();
+                successOperation(OPERATIONS.UPDATE);
+            })
+            .catch(error => {
+                console.log(error);
+                failOperation(OPERATIONS.UPDATE);
+            });
+    };
+
+    const editionId = () => workShiftFormData.id.value;
+
 
     const formElementsArray = [];
     for (let k in workShiftFormData) {
@@ -339,9 +364,12 @@ const WorkShift = () => {
                                 label={formElement.config.label}
                             />
                 ))}
+                {editionId() //we consider that is and edition when we already have an ID 
+                    ? <Button btntype="Edit" clicked={(event) => editWorkshiftProceed(event, editionId())}>Guardar horario</Button>
+                    : <Button btntype="Save" clicked={createWorkshiftHandler}>Crear Horario</Button>
+                }
 
 
-                <Button btntype="Save" clicked={createWorkshift}>Guardar</Button>
                 <Button btntype="Clear" clicked={clearFormHandler}>Limpiar</Button>
 
             </form>
