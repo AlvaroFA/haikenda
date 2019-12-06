@@ -268,6 +268,7 @@ function SignUp() {
      */
     const erasehandler = (event, uid) => {
         event.preventDefault();
+        event.stopPropagation();
         if (!confirm("Borrar usuario?")) {
             return;
         }
@@ -350,7 +351,7 @@ function SignUp() {
     }
 
     const getOperationInfo = () => {
-        if (operation.operation === OPERATIONS.CREATE || operation.operation == OPERATIONS.UPDATE) {
+        if (operation.operation === OPERATIONS.CREATE || operation.operation === OPERATIONS.UPDATE) {
             if (operation.waiting)
                 return <p className="state waiting">Guardando...</p>
             if (operation.success)

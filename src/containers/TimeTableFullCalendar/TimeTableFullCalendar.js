@@ -22,20 +22,20 @@ const TimeTableFullCalendar = () => {
 
   const loadDBDataInState = () => {
     axios.get('https://haikenda-6a939.firebaseio.com/workers.json').then(response => {
-      if (isMounted.current == true) {
+      if (isMounted.current === true) {
         setWorkerData(response.data);
       }
     })
 
     axios.get('https://haikenda-6a939.firebaseio.com/timetable.json').then(response => {
-      if (isMounted.current == true) {
+      if (isMounted.current === true) {
         setTimeTableData(response.data);
       }
     })
 
 
     axios.get('https://haikenda-6a939.firebaseio.com/workshift.json').then(response => {
-      if (isMounted.current == true) {
+      if (isMounted.current === true) {
         setWorkShiftData(response.data);
       }
     })
@@ -80,30 +80,30 @@ const TimeTableFullCalendar = () => {
     return workerArray;
   };
 
-  const giveMeEvents=()=>{
-    if(!timeTableData || !workShiftData){
+  const giveMeEvents = () => {
+    if (!timeTableData || !workShiftData) {
       return [];
     }
 
-    const arrayEventos=[];
-    for (const idWorkShift in workShiftData){
+    const arrayEventos = [];
+    for (const idWorkShift in workShiftData) {
       const workshift = workShiftData[idWorkShift];
       let idTimetable = workshift.timetable;
       let timetable = timeTableData[idTimetable];
-      //let title = timetable.title + " ("+ timetable.startTime + "-" + timetable.endTime + ")";
-      let title = timetable.title 
+      let title = timetable.title + " (" + timetable.startTime + "-" + timetable.endTime + ")";
+      //let title = timetable.title 
       let idworker = workshift.worker;
       //let start = workshift.startTime;
       let start = timetable.startTime;
       let end = workshift.endTime;
-    
+
       arrayEventos.push({
         resourceId: idworker,
         id: idWorkShift,
         title,
         startTime: start,
         endTime: end,
-        start:end,
+        start: end,
 
       })
     }
@@ -132,7 +132,7 @@ const TimeTableFullCalendar = () => {
 
         events={
           giveMeEvents()}
-      
+
       />
     </div>
   );

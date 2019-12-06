@@ -105,9 +105,9 @@ const WorkShift = () => {
                 setworkShiftData(response);
             }
         })
-        Promise.all([workers, timetables, workshifts]).then(()=>{
+        Promise.all([workers, timetables, workshifts]).then(() => {
             successOperation(OPERATIONS.FETCH);
-        }).catch((error)=>{
+        }).catch((error) => {
             console.error(error);
             failOperation(OPERATIONS.FETCH, "Error cargando los datos");
         });
@@ -126,11 +126,11 @@ const WorkShift = () => {
         return value.trim() === '';
     }
 
-    const validateInputInForm = (form, value, rules)=> {
+    const validateInputInForm = (form, value, rules) => {
         if (!rules) return [];
 
         let validationErrors = [];
-        
+
         if (rules.required) {
             if (isEmpty(value)) {
                 validationErrors.push("Campo obligatorio");
@@ -138,7 +138,7 @@ const WorkShift = () => {
             }
         }
 
-        if(!isEmpty(value)) {
+        if (!isEmpty(value)) {
             if (rules.greaterThan) {
                 let otherField = rules.greaterThan;
                 otherField = form[otherField];
@@ -174,7 +174,7 @@ const WorkShift = () => {
         newWorkShiftFormData[inputId] = updatedElement;
 
         //Validate the complete form
-        for(const field in newWorkShiftFormData) {
+        for (const field in newWorkShiftFormData) {
             const input = newWorkShiftFormData[field];
             newWorkShiftFormData[field] = {
                 ...newWorkShiftFormData[field],
@@ -307,15 +307,18 @@ const WorkShift = () => {
 
     const erasehandler = (event, id) => {
         event.preventDefault();
-        // execiting delete method
+        if (!confirm("Desea eliminar el turno?")) {
+            return;
+        }
         startOperation(OPERATIONS.DELETE);
+        // executing delete method
         WorkShiftProvider.eraseWorkshift(id).then(
             response => {
                 // reloading new data
                 loadDBDataInState();
                 successOperation(OPERATIONS.DELETE);
             }
-        ).catch((error)=>{
+        ).catch((error) => {
             console.error(error);
             failOperation(OPERATIONS.DELETE, error);
         });
@@ -336,7 +339,7 @@ const WorkShift = () => {
         }
 
         //Validate the complete form before loading it
-        for(const field in newForm) {
+        for (const field in newForm) {
             const input = newForm[field];
             newForm[field] = {
                 ...newForm[field],
@@ -429,14 +432,14 @@ const WorkShift = () => {
     const failedCreationOrEdition = hasFailed(OPERATIONS.CREATE) || hasFailed(OPERATIONS.UPDATE);
 
 
-    const getOperationInfo = ()=>{
-        if(operation.operation===OPERATIONS.CREATE || operation.operation===OPERATIONS.UPDATE) {
-            if(operation.waiting) 
+    const getOperationInfo = () => {
+        if (operation.operation === OPERATIONS.CREATE || operation.operation === OPERATIONS.UPDATE) {
+            if (operation.waiting)
                 return <p className="state waiting">Guardando...</p>
-            if (operation.success) 
+            if (operation.success)
                 return <p className="state success">Turno guardado</p>
-            if (operation.failed) 
-                return <p className="state failed">{"No se pudo guardar el turno: "+operation.reason}</p>
+            if (operation.failed)
+                return <p className="state failed">{"No se pudo guardar el turno: " + operation.reason}</p>
         }
     }
 
