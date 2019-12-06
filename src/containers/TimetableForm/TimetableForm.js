@@ -275,6 +275,13 @@ function TimeTableForm() {
     const editTimeTableFormProceed = (event, timetableId) => {
         event.preventDefault();
         event.stopPropagation();
+
+        //only submit if it's valid
+        if (!isValid()) {
+            failOperation(OPERATIONS.UPDATE, "Algún dato no es válido");
+            return;
+        }
+
         //coger los datos del form
         const timeTableData = {};
         for (let timeTableElement in timeTableFormState.timeTableForm) {

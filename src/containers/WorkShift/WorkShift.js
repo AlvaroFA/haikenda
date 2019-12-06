@@ -221,8 +221,23 @@ const WorkShift = () => {
         return workerList;
     }
 
+    const isValid = (form = workShiftFormData) => {
+        for (const field in form) {
+            const input = form[field];
+            if (input.validationErrors &&
+                input.validationErrors.length > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     const createWorkshiftHandler = (event) => {
         event.preventDefault();
+        if (!isValid()) {
+            failOperation(OPERATIONS.CREATE, "Algún dato no es válido");
+            return;
+        }
         const workshiftData = {};
         for (let field in workShiftFormData) {
             workshiftData[field] = workShiftFormData[field].value;
@@ -395,6 +410,10 @@ const WorkShift = () => {
 
     const editWorkshiftProceed = (event, workshiftId) => {
         event.preventDefault();
+        if (!isValid()) {
+            failOperation(OPERATIONS.UPDATE, "Algún dato no es válido");
+            return;
+        }
         //coger los datos del form
         const currentFormData = {};
         for (let field in workShiftFormData) {

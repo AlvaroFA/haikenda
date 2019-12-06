@@ -291,6 +291,12 @@ function SignUp() {
 
     const editWorkerFormProceed = (event, uid) => {
         event.preventDefault();
+        //only submit if it's valid
+        if (!isValid()) {
+            failOperation(OPERATIONS.UPDATE, "Algún dato no es válido");
+            return;
+        }
+
         //coger los datos del form
         const workerData = {};
         for (let workerProp in workerForm) {
