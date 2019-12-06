@@ -2,7 +2,7 @@
 
 # HaiKenda- Aplicación Web para Xestión de quendas de traballo
 
-Proxecto Final de Ciclo Superior de FP Desenvolvemento de Aplicións Web, feito con React
+Proxecto Final de Ciclo Superior de FP Desenvolvemento de Aplicións Web, feito con React e Firebase
 
 
 ## Librerias utilizadas
@@ -40,13 +40,25 @@ Para verificar a correcta instalacion, executamos `npm --v`, con is obtemos a ve
 Unha vez verificadas ambas librerias estén correctas, executamos npm install no  directorio onde está albergado o código.
 Con isto comenzará a descarga e instalación das librarias necesarias. Unha vez finalizado o proceso, executamos a instrucción 
 
-`npm start`
+`npm start` -  Inicia o servicio en modo desenvolvemento
+`npm runtime build` - Xera o bundle e tódolos assets necesarios
 
 ## Configuración de Firebase 
 
+### Creación do proxecto en Firebase
+
+Dita creación esta explicada na seguinte ligazón https://firebase.google.com/docs/web/setup#create-firebase-project
+
 ### Accedemos a Firebase e creamos o proxecto
 A configuración de Firebase para proxecto está na ruta `"src\components\firebase\config.js"`. Neste arquivo tense que poñer a configuracion correspondente o proxecto creado en Firebase
+
+### Rexistro da aplicación 
+
+Para que o correcto uso de Firebase hai que rexistrar a aplicación, dito procedemento ven descrito na seguinte ligazón https://firebase.google.com/docs/web/setup#register-app
+
 ### Regras da Bases de datos
+
+Para obter a información da base de datos do proxecto recién creado hai que seguir os pasos que se indican na ligazón https://firebase.google.com/docs/web/setup#config-object
 A configuración paraa as regras de permisos na Base de datos de Firebase están ubicada en `"\haikenda\firebase_db_rules"`
 ```
 {
@@ -66,9 +78,12 @@ A configuración paraa as regras de permisos na Base de datos de Firebase están
   }
 }
 ```
+
 ### Métodos de authenticación 
 
-Na consola de ´firebase/Authentication´ habilitamos os proveedores de inicio de sesión Correo electrónico / contrasinal e anónimo
+Na consola de `"firebase/Authentication"` habilitamos os proveedores de inicio de sesión Correo electrónico / contrasinal e anónimo
 
+### Despregue da aplicación en Firebase 
 
+Unha vez executado a instrucción `npm runtime build` hai que seguir os pasos indicados en https://firebase.google.com/docs/web/setup#install-cli-deploy
 
