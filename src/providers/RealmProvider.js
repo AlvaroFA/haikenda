@@ -36,6 +36,10 @@ export function sendPasswordResetEmail(email) {
         .catch((err) => alert("Error email de recuperación de contraseña a "+email+". "+err));
 }
 
+export function currentUser(){
+    return firebaseApp.auth().currentUser;
+}
+
 function generateUserErrorMessage(firebaseCode) {
     switch (firebaseCode) {
         case 'auth/email-already-in-use':

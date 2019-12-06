@@ -7,6 +7,7 @@ import useOperationState from '../../hooks/OperationState';
 import WorkerContainer from '../../components/WorkerContainer/WorkerContainer';
 import provider from '../../providers/WorkersProvider';
 import Button from '../../components/UI/Button/Button';
+import {currentUser} from '../../providers/RealmProvider';
 
 /**
  * Checks that a string is a strong password:
@@ -127,7 +128,7 @@ const initialWorkerForm = {
 // initial values for useState
 const initialWorkersData = {};
 
-function SignUp({user}) {
+function SignUp() {
     const [workerForm, setWorkerForm] = useState(initialWorkerForm);
     const [dataState, setDataState] = useState(initialWorkersData);
     const isMounted = useRef(true);
@@ -140,6 +141,8 @@ function SignUp({user}) {
         startOperation,
         clearOperation
     } = useOperationState();
+
+    const user = currentUser();
 
     /**
      * Checks if all validation are correct
