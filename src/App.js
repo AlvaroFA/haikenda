@@ -38,6 +38,19 @@ class App extends Component {
             },
             sessionInfoRetrieved: true
           });
+        }).catch((error)=>{
+          if(error.code === "PERMISSION_DENIED"){
+            this.setState({
+              user: {
+                uid: user.uid,
+                realmEmail: user.email,
+                isAnonymous: user.isAnonymous
+              },
+              sessionInfoRetrieved: true
+            });
+          } else {
+            console.error(error);
+          }
         });
     } else {
       this.setState({ sessionInfoRetrieved: true });
