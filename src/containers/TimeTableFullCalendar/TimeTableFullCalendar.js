@@ -1,15 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
-import axios from '../../axios.app';
 
 import '../../../node_modules/@fullcalendar/core/main.css';
 import '../../../node_modules/@fullcalendar/resource-timeline/main.css';
 import '../../../node_modules/@fullcalendar/timeline/main.css';
 import './TimeTableFullCalendar.css'
-import WorkShift from '../WorkShift/WorkShift';
+import { fetchWorkers } from '../../providers/WorkersProvider';
+import { fetchTimetables } from '../../providers/TimetableProvider';
+import { fetchWorkshifts } from '../../providers/WorkshiftProvider';
 
-const initialEventValues = {};
 const initialWorkShiftData = undefined;
 const initialTimeTableData = undefined;
 
@@ -18,23 +18,22 @@ const TimeTableFullCalendar = () => {
   const [workerData, setWorkerData] = useState({});
   const [timeTableData, setTimeTableData] = useState(initialTimeTableData);
   const [workShiftData, setWorkShiftData] = useState(initialWorkShiftData);
-  const [eventData, setEventData] = useState(initialEventValues);
 
   const loadDBDataInState = () => {
-    axios.get('https://haikenda-6a939.firebaseio.com/workers.json').then(response => {
+    fetchWorkers().then(response => {
       if (isMounted.current === true) {
-        setWorkerData(response.data);
+        setWorkerData(response);
       }
     })
 
-    axios.get('https://haikenda-6a939.firebaseio.com/timetable.json').then(response => {
+    fetchTimetables().then(response => {
       if (isMounted.current === true) {
-        setTimeTableData(response.data);
+        setTimeTableData(response);
       }
     })
 
 
-    axios.get('https://haikenda-6a939.firebaseio.com/workshift.json').then(response => {
+    fetchWorkshifts().then(response => {
       if (isMounted.current === true) {
         setWorkShiftData(response.data);
       }
@@ -56,14 +55,6 @@ const TimeTableFullCalendar = () => {
       isMounted.current = false;
     });
   }, []);
-
-
-
-
-
-
-
-
 
   const getDataWorker = () => {
     const workerArray = [];
@@ -107,8 +98,6 @@ const TimeTableFullCalendar = () => {
     }
     return arrayEventos;
   }
-
-
 
   return (
     <div className="TimeTableFullCalendar">

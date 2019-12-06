@@ -200,7 +200,7 @@ function TimeTableForm() {
     }
 
     /*Creation form
-    Iterates inpus values and save into a variable timeTableData. This variable is passed to axios post
+    Iterates inpus values and save into a variable timeTableData
     to store data into DDBB */
 
     const createTimeTableFormProceed = (event) => {
