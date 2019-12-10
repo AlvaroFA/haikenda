@@ -6,6 +6,7 @@ import useOperationState from '../../hooks/OperationState';
 import TimeTableProvider from '../../providers/TimetableProvider';
 import WorkerProvider from '../../providers/WorkersProvider';
 import { default as WorkShiftProvider, default as WorkshiftProvider } from '../../providers/WorkshiftProvider';
+import './WorkShift.css';
 
 const initialWorkShiftFormData = {
     id: {
@@ -48,7 +49,7 @@ const initialWorkShiftFormData = {
         label: 'Dia inicial',
         validation: {
             required: true,
-            lessThan: 'endTime',
+            lessOrEqThan: 'endTime',
         },
         edited: false,
         validationErrors: ["Campo obligatorio"]
@@ -62,7 +63,7 @@ const initialWorkShiftFormData = {
         label: 'Dia  final',
         validation: {
             required: true,
-            greaterThan: 'startTime',
+            greaterOrEqThan: 'startTime',
         },
         edited: false,
         validationErrors: ["Campo obligatorio"]
@@ -139,20 +140,20 @@ const WorkShift = () => {
         }
 
         if (!isEmpty(value)) {
-            if (rules.greaterThan) {
-                let otherField = rules.greaterThan;
+            if (rules.greaterOrEqThan) {
+                let otherField = rules.greaterOrEqThan;
                 otherField = form[otherField];
                 const otherValue = otherField.value;
-                if (!isEmpty(otherValue) && !(value > otherValue)) {
+                if (!isEmpty(otherValue) && !(value >= otherValue)) {
                     validationErrors.push(`Tiene que ser mayor a '${otherField.label}'`);
                 }
             }
 
-            if (rules.lessThan) {
-                let otherField = rules.lessThan;
+            if (rules.lessOrEqThan) {
+                let otherField = rules.lessOrEqThan;
                 otherField = form[otherField];
                 const otherValue = otherField.value;
-                if (!isEmpty(otherValue) && !(value < otherValue)) {
+                if (!isEmpty(otherValue) && !(value <= otherValue)) {
                     validationErrors.push(`Tiene que ser menor que '${otherField.label}'`);
                 }
             }
@@ -207,13 +208,13 @@ const WorkShift = () => {
                 incorrectValues={incorrectValues}
                 changed={(evt) => inputChangeHandler(evt, "worker")}
                 label={formElement.label} >
-                <option value="" label="--Seleccione una opcion--"></option>
+                <option className='op' value="" label="--Seleccione una opcion--">--Seleccione una opcion--</option>
                 {workerArray.map(option => (
-                    <option
+                    <option className='op'
                         key={option.id}
                         value={option.id}
                         label={option.config.name + " " + option.config.surname}
-                    ></option>
+                    >{option.config.name + " " + option.config.surname}</option>
                 ))}
             </Input>
         );
@@ -278,13 +279,13 @@ const WorkShift = () => {
                 incorrectValues={incorrectValues}
                 changed={(evt) => inputChangeHandler(evt, "timetable")}
                 label={formElement.label}>
-                <option label="--Seleccione una opcion--"></option>
+                <option label="--Seleccione una opcion--">--Seleccione una opcion--</option>
                 {timertableArray.map(option => (
                     <option
                         key={option.id}
                         value={option.id}
                         label={option.config.title + " (" + option.config.startTime + "-" + option.config.endTime + ")"}
-                    ></option>
+                    >{option.config.title + " (" + option.config.startTime + "-" + option.config.endTime + ")"}</option>
                 ))}
             </Input>
         );
