@@ -419,8 +419,8 @@ function TimeTableForm() {
                         title={elemento.datos.title}
                         startTime={elemento.datos.startTime}
                         endTime={elemento.datos.endTime}
-                        onClick={(event) => erasehandler(event, elemento.id)}
-                        toupdate={(event) => startEditionHandler(event, elemento.id)}
+                        onDelete={(event) => erasehandler(event, elemento.id)}
+                        onUpdate={(event) => startEditionHandler(event, elemento.id)}
                         disabled={isWaitingForOperation()}
                     />
                 ))}

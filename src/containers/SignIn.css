@@ -1,0 +1,31 @@
+.SignIn{
+margin-left: -20%;
+margin-top: 10%;
+
+
+}
+
+.Container{
+    background-color: black;
+}
+
+
+
+
+.mdl-card.mdl-shadow--2dp.firebaseui-container.firebaseui-id-page-sign-in{
+    max-width: 50%;
+}
+
+
+.firebaseui-id-submit.firebaseui-button.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--colored{
+    display: grid;
+    background: #59253A;
+}
+
+.firebaseui-subtitle,.firebaseui-title{
+    font-size: 30px;
+}
+
+
+
+

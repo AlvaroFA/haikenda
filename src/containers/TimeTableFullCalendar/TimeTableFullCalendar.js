@@ -5,7 +5,7 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import '../../../node_modules/@fullcalendar/core/main.css';
 import '../../../node_modules/@fullcalendar/resource-timeline/main.css';
 import '../../../node_modules/@fullcalendar/timeline/main.css';
-import './TimeTableFullCalendar.css'
+import './TimeTableFullCalendar.css';
 import { fetchWorkers } from '../../providers/WorkersProvider';
 import { fetchTimetables } from '../../providers/TimetableProvider';
 import { fetchWorkshifts } from '../../providers/WorkshiftProvider';
@@ -106,6 +106,7 @@ const TimeTableFullCalendar = () => {
       <FullCalendar
         defaultView="resourceTimeline"
         plugins={[resourceTimelinePlugin]}
+        themeSystem='bootstrap'
         header={{
           left: 'prev,next ,resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth',
           center: 'title',
@@ -116,7 +117,7 @@ const TimeTableFullCalendar = () => {
         firstDay={1}
         nowIndicator={true}
         schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
-        resources= {getDataWorker()}
+        resources={getDataWorker()}
         events={giveMeEvents()}
       />
     </div>

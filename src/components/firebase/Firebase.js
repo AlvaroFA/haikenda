@@ -4,10 +4,10 @@ import 'firebase/database';
 import config from "./config"
 
 const firebaseApp = firebase.initializeApp(config);
-firebaseApp.auth().languageCode = 'es';
+firebaseApp.auth().languageCode = "es";
 
 export const userRegisterApp = firebase.initializeApp(config, "UserRegister");
-userRegisterApp.auth().languageCode = 'es';
+userRegisterApp.auth().languageCode = "es";
 
 export const database = firebaseApp.database();
 export const auth = firebaseApp.auth();

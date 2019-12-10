@@ -4,7 +4,7 @@
 
 Proxecto Final de Ciclo Superior de FP Desenvolvemento de Aplicións Web, feito con React e Firebase
 
-## Pricipáis librerías utilizadas
+## Principáis librerías utilizadas
  
 | Libraria | Descripción |
 | ------------- | ------------- |

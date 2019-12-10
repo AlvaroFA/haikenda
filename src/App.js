@@ -7,7 +7,7 @@ import TimeTableform from './containers/TimetableForm/TimetableForm';
 import { Route, Switch } from 'react-router-dom';
 import TimeTableFullCalendar from './containers/TimeTableFullCalendar/TimeTableFullCalendar';
 import { fetchOneWorker } from './providers/WorkersProvider'
-
+import './App.css'
 import firebaseApp from './components/firebase/Firebase';
 
 import firebase from 'firebase/app';
@@ -38,8 +38,8 @@ class App extends Component {
             },
             sessionInfoRetrieved: true
           });
-        }).catch((error)=>{
-          if(error.code === "PERMISSION_DENIED"){
+        }).catch((error) => {
+          if (error.code === "PERMISSION_DENIED") {
             this.setState({
               user: {
                 uid: user.uid,
@@ -75,7 +75,7 @@ class App extends Component {
   render() {
 
     if (!this.state.sessionInfoRetrieved) {
-      return <div> LOADING... </div>
+      return <div className="Backdrop"> </div>
     }
 
     if (!this.isUserLogged()) {
@@ -88,7 +88,9 @@ class App extends Component {
       return (<Layout
         isLoggedIn={this.isUserLogged()}
         user={this.state.user}>
-        <div>Cuenta no registrada</div>
+        <div className='noAuth'>
+          <p className='msg'>Cuenta no registrada<br /> Contacte con su administrador</p>
+        </div>
       </Layout>);
     }
 
