@@ -1,0 +1,28 @@
+.DescriptionField {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.DescriptionFieldName {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.DescriptionFieldValue {
+  display: inline-block;
+}
+
+.WorkShiftContainer {
+  border: 1px solid #bdbdbd;
+  margin-bottom: 24px;
+  padding: 24px;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.WorkShiftContainerButtons {
+  margin-bottom: -8px;
+
+}

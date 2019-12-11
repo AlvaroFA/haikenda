@@ -63,7 +63,7 @@ const TimeTableFullCalendar = () => {
       for (let v in items) {
         workerArray.push({
           id: k,
-          title: items[v].name + items[v].surname
+          title: items[v].name + " " + items[v].surname
         });
       }
     }
@@ -83,7 +83,7 @@ const TimeTableFullCalendar = () => {
       let timetable = timeTableData[idTimetable];
       let title = timetable.title + " (" + timetable.startTime + "-" + timetable.endTime + ")";
       let idworker = workshift.worker;
-      let start = timetable.startTime;
+      let start = workshift.startTime;
       let end = workshift.endTime;
 
       arrayEventos.push({

@@ -6,7 +6,7 @@ import useOperationState from '../../hooks/OperationState';
 import TimeTableProvider from '../../providers/TimetableProvider';
 import WorkerProvider from '../../providers/WorkersProvider';
 import { default as WorkShiftProvider, default as WorkshiftProvider } from '../../providers/WorkshiftProvider';
-import './WorkShift.css';
+
 
 const initialWorkShiftFormData = {
     id: {
@@ -403,8 +403,8 @@ const WorkShift = () => {
                         worker={giveMeDataWorker(element.config.worker)}
                         endTime={element.config.endTime}
                         startTime={element.config.startTime}
-                        onClick={(event) => erasehandler(event, element.id)}
-                        toupdate={(event) => startEditionHandler(event, element.id)}
+                        onDelete={(event) => erasehandler(event, element.id)}
+                        onUpdate={(event) => startEditionHandler(event, element.id)}
                     />
                 ))}
             </div>
