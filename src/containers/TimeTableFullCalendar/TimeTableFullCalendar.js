@@ -35,8 +35,9 @@ const TimeTableFullCalendar = () => {
 
     fetchWorkshifts().then(response => {
       if (isMounted.current === true) {
-        setWorkShiftData(response.data);
+        setWorkShiftData(response);
       }
+
     })
 
   }
@@ -49,12 +50,6 @@ const TimeTableFullCalendar = () => {
   }, []);
 
 
-  useEffect(() => {
-    loadDBDataInState();
-    return (() => {
-      isMounted.current = false;
-    });
-  }, []);
 
   const getDataWorker = () => {
     const workerArray = [];
@@ -85,15 +80,12 @@ const TimeTableFullCalendar = () => {
       let idworker = workshift.worker;
       let start = workshift.startTime;
       let end = workshift.endTime;
-
       arrayEventos.push({
         resourceId: idworker,
         id: idWorkShift,
         title,
-        startTime: start,
-        endTime: end,
-        start: end,
-
+        start: start,
+        end: end
       })
     }
     return arrayEventos;
@@ -104,14 +96,12 @@ const TimeTableFullCalendar = () => {
       <h1>Horarios</h1>
 
       <FullCalendar
-        defaultView="resourceTimeline"
+        defaultView="resourceTimelineMonth"
         plugins={[resourceTimelinePlugin]}
         themeSystem='bootstrap'
         header={{
-          left: 'prev,next ,resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth',
-          center: 'title',
-          // TO DO MODIFY BUTTON CALENDAR
-          right: 'resourceTimelineMonth, resourceTimelineDay'
+          left: 'prev,next ,resourceTimelineMonth',
+          center: 'title'
         }}
         locale='es'
         firstDay={1}
