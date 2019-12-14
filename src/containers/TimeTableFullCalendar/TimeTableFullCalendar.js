@@ -100,8 +100,9 @@ const TimeTableFullCalendar = () => {
           height="parent"
           plugins={[resourceTimelinePlugin]}
           header={{
-            left: 'prev,next ,resourceTimelineMonth',
-            center: 'title'
+            left: 'prev,next today',
+            center: 'title',
+            right: ''
           }}
           locale='es'
           firstDay={1}
