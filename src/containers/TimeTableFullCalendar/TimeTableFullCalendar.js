@@ -2,9 +2,9 @@ import React, { Fragment, useRef, useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 
-import '../../../node_modules/@fullcalendar/core/main.css';
-import '../../../node_modules/@fullcalendar/resource-timeline/main.css';
-import '../../../node_modules/@fullcalendar/timeline/main.css';
+import './core.css';
+import './resource-timeline.css';
+import './timeline.css';
 import './TimeTableFullCalendar.css';
 import { fetchWorkers } from '../../providers/WorkersProvider';
 import { fetchTimetables } from '../../providers/TimetableProvider';
