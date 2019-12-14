@@ -573,16 +573,21 @@ TODO: more distinction between this file and common.css
 .fc-unthemed .fc-divider,
 .fc-unthemed .fc-popover .fc-header,
 .fc-unthemed .fc-list-heading td {
-  background: #eee;
+  background: rgba(89, 37, 58, 0.2);
 }
 
 .fc-unthemed td.fc-today {
-  background: #fcf8e3;
+  background: #0677a1;
+  opacity: 0.1;
 }
 
 .fc-unthemed .fc-disabled-day {
   background: #d7d7d7;
   opacity: 0.3;
+}
+
+.fc-center h2::first-letter {
+  text-transform: capitalize;
 }
 
 /* Icons
@@ -652,7 +657,7 @@ Lots taken from Flatly (MIT): https://bootswatch.com/4/flatly/bootstrap.css
 .fc-button {
   border-radius: 0;
   overflow: visible;
-  text-transform: none;
+  text-transform: capitalize;
   margin: 0;
   font-family: inherit;
   font-size: inherit;
@@ -681,7 +686,7 @@ Lots taken from Flatly (MIT): https://bootswatch.com/4/flatly/bootstrap.css
 .fc-button {
   display: inline-block;
   font-weight: 400;
-  color: #212529;
+  color: red;
   text-align: center;
   vertical-align: middle;
   -webkit-user-select: none;
@@ -701,11 +706,11 @@ Lots taken from Flatly (MIT): https://bootswatch.com/4/flatly/bootstrap.css
   text-decoration: none;
 }
 
-.fc-button:focus {
+/* .fc-button:focus {
   outline: 0;
   -webkit-box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
   box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
-}
+} */
 
 .fc-button:disabled {
   opacity: 0.65;
@@ -713,40 +718,40 @@ Lots taken from Flatly (MIT): https://bootswatch.com/4/flatly/bootstrap.css
 
 /* "primary" coloring */
 .fc-button-primary {
-  color: #fff;
-  background-color: #2C3E50;
-  border-color: #2C3E50;
+  color: #fefefe;
+  background-color: #0677a1;
+  border-color: #0677a1;
 }
 
 .fc-button-primary:hover {
-  color: #fff;
-  background-color: #1e2b37;
-  border-color: #1a252f;
+  color: #fefefe;
+  background-color: #2d4159;
+  border-color: #2d4159;
 }
 
-.fc-button-primary:focus {
+/* .fc-button-primary:focus,
+.fc-button-primary:disabled {
   -webkit-box-shadow: 0 0 0 0.2rem rgba(76, 91, 106, 0.5);
   box-shadow: 0 0 0 0.2rem rgba(76, 91, 106, 0.5);
-}
+} */
 
-.fc-button-primary:disabled {
-  color: #fff;
-  background-color: #2C3E50;
-  border-color: #2C3E50;
-}
-
-.fc-button-primary:not(:disabled):active,
 .fc-button-primary:not(:disabled).fc-button-active {
   color: #fff;
-  background-color: #1a252f;
-  border-color: #151e27;
+  background-color: #0677a1;
+  border-color: #0677a1;
 }
 
-.fc-button-primary:not(:disabled):active:focus,
+.fc-button-primary:not(:disabled).fc-button-active:hover {
+  color: #fefefe;
+  background-color: #2d4159;
+  border-color: #2d4159;
+}
+
+/* .fc-button-primary:not(:disabled):active:focus,
 .fc-button-primary:not(:disabled).fc-button-active:focus {
   -webkit-box-shadow: 0 0 0 0.2rem rgba(76, 91, 106, 0.5);
   box-shadow: 0 0 0 0.2rem rgba(76, 91, 106, 0.5);
-}
+} */
 
 /* icons within buttons */
 .fc-button .fc-icon {
