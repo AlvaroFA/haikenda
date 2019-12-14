@@ -1,5 +1,10 @@
+
+.LayoutMain {
+    display: flex;
+    flex-direction: column;
+}
+
 .TimeTableFullCalendar {
-padding: 20px;
-padding-top: 0;
-background-color: #fefefe;
+    background-color: #fefefe;
+    flex: 1;
 }

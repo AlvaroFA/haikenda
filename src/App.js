@@ -95,20 +95,18 @@ class App extends Component {
     }
 
     return (
-      <div>
-        <Layout
-          isLoggedIn={this.isUserLogged()}
-          isAdmin={this.state.user && this.state.user.admin}
-          user={this.state.user}>
-          <Switch>
-            <Route path="/" exact component={TimeTableFullCalendar} />
-            <Route exact path="/signin" component={SignIn} />
-            <Route path="/signup" component={SignUp} />
-            <Route path="/timeTableForm" component={TimeTableform} />
-            <Route path="/workshift" component={Workshift} />
-          </Switch>
-        </Layout>
-      </div>
+      <Layout
+        isLoggedIn={this.isUserLogged()}
+        isAdmin={this.state.user && this.state.user.admin}
+        user={this.state.user}>
+        <Switch>
+          <Route path="/" exact component={TimeTableFullCalendar} />
+          <Route exact path="/signin" component={SignIn} />
+          <Route path="/signup" component={SignUp} />
+          <Route path="/timeTableForm" component={TimeTableform} />
+          <Route path="/workshift" component={Workshift} />
+        </Switch>
+      </Layout>
     );
   }
 }

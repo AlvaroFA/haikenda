@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { Fragment, useRef, useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 
@@ -92,25 +92,26 @@ const TimeTableFullCalendar = () => {
   }
 
   return (
-    <div className="TimeTableFullCalendar">
+    <Fragment>
       <h1>Horarios</h1>
-
-      <FullCalendar
-        defaultView="resourceTimelineMonth"
-        plugins={[resourceTimelinePlugin]}
-        themeSystem='bootstrap'
-        header={{
-          left: 'prev,next ,resourceTimelineMonth',
-          center: 'title'
-        }}
-        locale='es'
-        firstDay={1}
-        nowIndicator={true}
-        schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
-        resources={getDataWorker()}
-        events={giveMeEvents()}
-      />
-    </div>
+      <div className="TimeTableFullCalendar">
+        <FullCalendar
+          defaultView="resourceTimelineMonth"
+          height="parent"
+          plugins={[resourceTimelinePlugin]}
+          header={{
+            left: 'prev,next ,resourceTimelineMonth',
+            center: 'title'
+          }}
+          locale='es'
+          firstDay={1}
+          nowIndicator={true}
+          schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
+          resources={getDataWorker()}
+          events={giveMeEvents()}
+        />
+      </div>
+    </Fragment>
   );
 };
 export default TimeTableFullCalendar;
