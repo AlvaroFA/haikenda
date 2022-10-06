@@ -8,7 +8,7 @@
     "@fullcalendar/react": "^4.3.0",
     "@fullcalendar/resource-timeline": "^4.3.0",
     "firebase": "^7.5.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-firebaseui": "^4.0.0",
